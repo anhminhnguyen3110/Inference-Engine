@@ -1,4 +1,6 @@
-# import necessary libraries
+
+from Sentence import Sentence
+
 
 class KnowledgeBase:
     def __init__(self):
@@ -9,17 +11,22 @@ class KnowledgeBase:
     def __str__(self) -> str:
         return "KB: " + str(self.sentences) + "\nQuery: " + str(self.query)
     
-    def add_sentence(self, sentence): # add sentence to knowledge base
+    def add_sentence(self, str: str): # add sentence to knowledge base
+        sentence = Sentence(str)
         self.sentences.append(sentence)
-        for symbol in sentence.symbols:
-            if symbol not in self.symbols:
-                self.symbols.append(symbol)
 
-    def add_query(self, query): # add query to knowledge base
+    def add_query(self, query:str): # add query to knowledge base
+        query = Sentence(query)
         return self.query.append(query)
     
-    def act(self, sentence):
+    def act(self, command):
         if(self.current_action == "TELL"):
-            self.add_sentence(sentence)
+            self.add_sentence(command)
         elif(self.current_action == "ASK"):
-            self.add_query(sentence)
+            self.add_query(command)
+
+    def set_action(self, action):
+        if(action == "TELL"):
+            self.current_action = "TELL"
+        elif(action == "ASK"):
+            self.current_action = "ASK" 
