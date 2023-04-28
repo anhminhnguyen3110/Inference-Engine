@@ -1,4 +1,3 @@
 from enum import Enum
 
-# class Operands(Enum):
-    
+OPERANDS = {'~': 4, '&': 3, '||': 3, '=>': 1, '<=>': 1}
