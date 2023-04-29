@@ -1,6 +1,7 @@
 import sys
+from Engine import Engine
 
-from read_input import read_input
+from KnowledgeBase import KnowledgeBase
 
 def main():
 	if(len(sys.argv) <= 2):
@@ -9,5 +10,8 @@ def main():
 	else:
 		method = sys.argv[1]
 		file_name = sys.argv[2]
-		read_input(file_name)
+		agent = Engine()
+		agent.set_method(method)
+		agent.knowledge_base.read_input(file_name)
+		agent.do_algorithm()
 main()
