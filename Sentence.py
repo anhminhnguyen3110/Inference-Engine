@@ -7,8 +7,7 @@ class Sentence:
         self.content = content
         self.symbols = symbols
         
-    def check(self, model) -> bool:
-        result = []
+    def check(self, model: list[tuple[str, bool]]) -> bool:
         stack = []
         for(token, value) in model:
             if(token in self.symbols):

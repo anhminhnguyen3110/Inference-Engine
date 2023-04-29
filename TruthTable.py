@@ -1,4 +1,3 @@
-from typing import Sequence
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 from Sentence import Sentence
@@ -7,12 +6,12 @@ class TruthTable(Algorithm):
         super().__init__(knowledge_base)
         self.name = "TT"
         self.count = 0
-        
-    def check_all(self, knowledge_base: KnowledgeBase, a: Sentence, symbols, model):
+    
+    def check_all(self, knowledge_base: KnowledgeBase, a: Sentence, symbols: list, model:list[tuple[str, bool]]):
         if(symbols.__len__() == 0):
             result = True
             if(knowledge_base.check(model)):
-                print(model)
+                # print(model)
                 result = a.check(model)
                 if(result):
                     self.count += 1

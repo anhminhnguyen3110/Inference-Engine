@@ -10,7 +10,7 @@ class Algorithm(ABC):
         pass
     
     @abstractmethod
-    def entails(self):
+    def entails(self) -> tuple[bool, int]:
         pass
     
 
