@@ -1,13 +1,24 @@
+from Sentence import Sentence
 from common import execute_logic
 from constants import OPERANDS
 
 
-class Sentence:
-    def __init__(self, content, symbols):
+class HornSentence(Sentence):
+    def __init__(self, raw_content = "", content = "", symbols = {}):
         self.content = content
         self.symbols = symbols
+        self.raw_content = raw_content
+        self.conjuncts = []
+        if len(self.content) == 1:
+            self.head = self.content[0]
+        else:
+            self.head = self.content[-2]
+            for element in self.content:
+                if element not in OPERANDS and element != self.head:
+                    self.conjuncts.append(element)
         
-    def check(self, model: list[tuple[str, bool]]) -> bool:
+    def check(self, model) -> bool:
+        result = []
         stack = []
         for(token, value) in model:
             if(token in self.symbols):
@@ -32,3 +43,4 @@ class Sentence:
 
     
     
+
