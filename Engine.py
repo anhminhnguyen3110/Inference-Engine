@@ -1,7 +1,7 @@
 from Algorithm import Algorithm
 from KnowledgeBase import KnowledgeBase
 from TruthTable import TruthTable
-
+from ForwardChaining import ForwardChaining
 
 class Engine:
     def __init__(self) -> None:
@@ -12,6 +12,9 @@ class Engine:
     def do_algorithm(self) -> bool:
         if(self.method == "TT"):
             self.algorithm = TruthTable(self.knowledge_base)
+            print(self.algorithm.entails())
+        if(self.method == "FC"):
+            self.algorithm = ForwardChaining(self.knowledge_base)
             print(self.algorithm.entails())
         return True
     

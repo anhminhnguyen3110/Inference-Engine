@@ -7,15 +7,6 @@ class TruthTable(Algorithm):
         super().__init__(knowledge_base)
         self.name = "TT"
         self.count = 0
-<<<<<<< Updated upstream
-        
-    def check_all(self, knowledge_base: KnowledgeBase, a: Sentence, symbols, model):
-        if(symbols.__len__() == 0):
-            result = True
-            if(knowledge_base.check(model)):
-                print(model)
-                result = a.check(model)
-=======
         self.knowledge_base = knowledge_base
         self.query = Sentence()
     def check_all(self, symbols: list, model:list[tuple[str, bool]]):
@@ -24,7 +15,6 @@ class TruthTable(Algorithm):
             if(self.knowledge_base.check(model)):
                 # print(model)
                 result = self.query.check(model)
->>>>>>> Stashed changes
                 if(result):
                     self.count += 1
             return result

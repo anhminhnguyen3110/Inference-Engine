@@ -1,10 +1,12 @@
 
+from HornSentence import HornSentence
 from Sentence import Sentence
 from common import *
 
 class KnowledgeBase:
     def __init__(self):
         self.sentences = []
+        self.horn_sentences = []
         self.symbols = dict()
         self.query = []
         self.query_symbols = dict()
@@ -27,13 +29,18 @@ class KnowledgeBase:
         
 
     def add_sentence(self, sentence:str):
-        sentence_symbols = self.add_symbol(sentence, True)
-        self.sentences.append(Sentence(sentence, sentence_symbols))
+        post_fix = infix_to_post_fix(sentence)
+        sentence_symbols = self.add_symbol(post_fix, True)
+        self.sentences.append(Sentence(sentence, post_fix, sentence_symbols))
+        self.horn_sentences.append(HornSentence(sentence, post_fix, sentence_symbols))
+
             
 
     def add_query(self, query:str):
-        sentence_symbols = self.add_symbol(query, False)
-        return self.query.append(Sentence(query, sentence_symbols))
+        post_fix = infix_to_post_fix(query)
+        sentence_symbols = self.add_symbol(post_fix, False)
+        self.query.append(Sentence(query, post_fix, sentence_symbols))
+
     
     def add_symbol(self, sequence:str, flag: bool) -> dict():
         sentence_symbols = dict()
@@ -72,10 +79,11 @@ class KnowledgeBase:
                     else:
                         sentences = line.split(';')
                         for sequence in sentences:
+                            sequence = sequence.strip().replace(" ", "")
                             if(sequence == ""):
                                 continue
                             else:
-                                self.act(infix_to_post_fix(sequence))
+                                self.act(sequence)
                 file.close()    
                 return self
         except IOError:

@@ -3,12 +3,12 @@ from constants import OPERANDS
 
 
 class Sentence:
-    def __init__(self, content: list = [], symbols: dict = dict()):
+    def __init__(self, raw_content: str = "", content: list = [], symbols: dict = dict()):
+        self.raw_content = raw_content
         self.content = content
         self.symbols = symbols
         
-    def check(self, model) -> bool:
-        result = []
+    def check(self, model: list[tuple[str, bool]]) -> bool:
         stack = []
         for(token, value) in model:
             if(token in self.symbols):
@@ -33,4 +33,3 @@ class Sentence:
 
     
     
-

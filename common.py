@@ -27,25 +27,20 @@ def infix_to_post_fix(sentences: str):
         queue.append(stack.pop())
     return queue
 
-def postfix_to_infix(sequences: list):
-    OPERANDS = {'~': 4, '&': 3, '||': 3, '=>': 1, '<=>': 1}
-    result = []
-    for sequence in sequences:
-        stack = []
-        for token in sequence:
-            if token not in OPERANDS:
-                stack.append(token)
-            elif(stack.__len__() >= 2 and token != "~"):
-                right = stack.pop()
-                left = stack.pop()
-                stack.append(f'({left} {token} {right})')
-            elif(stack.__len__() >= 1 and token == "~"):
-                right = stack.pop()
-                stack.append(f'~{right}')
-                
-        result.append(stack.pop())
-    return result    
-
+def postfix_to_infix(sequences):
+    stack = []
+    for token in sequences:
+        if token not in OPERANDS:
+            stack.append(token)
+        elif(stack.__len__() >= 2 and token != "~"):
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(f'({left} {token} {right})')
+        elif(stack.__len__() >= 1 and token == "~"):
+            right = stack.pop()
+            stack.append(f'~{right}')
+    return stack.pop()
+ 
 def execute_logic(operator: str, operand1: bool, operand2: bool):
     if(operator == "~"):
         return not operand1
