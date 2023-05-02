@@ -3,7 +3,8 @@ from constants import OPERANDS
 
 
 class Sentence:
-    def __init__(self, content, symbols):
+    def __init__(self, raw_content: str = "", content: list = [], symbols: dict = dict()):
+        self.raw_content = raw_content
         self.content = content
         self.symbols = symbols
         

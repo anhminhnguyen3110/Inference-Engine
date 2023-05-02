@@ -1,4 +1,5 @@
 from typing import Sequence
+from HornSentence import HornSentence
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 from Sentence import Sentence
@@ -11,7 +12,7 @@ class ForwardChaining(Algorithm):
         self.inferred = {}
         self.agenda = []
         self.path = []
-        self.query = Sentence()
+        self.query = HornSentence()
 
     def check_all(self):
         query = self.query.content[0]
@@ -33,7 +34,7 @@ class ForwardChaining(Algorithm):
     def entails(self) -> tuple[bool, int]: 
         self.query = self.knowledge_base.query[0]
         q = self.query.content[0]
-        for sentence in self.knowledge_base.sentences:
+        for sentence in self.knowledge_base.horn_sentences:
             if len(sentence.conjuncts) > 0:
                 self.count[sentence] = len(sentence.conjuncts)
             else:
