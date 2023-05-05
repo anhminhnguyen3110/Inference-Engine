@@ -1,17 +1,15 @@
-from typing import Sequence
 from HornSentence import HornSentence
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
-from Sentence import Sentence
 
 class ForwardChaining(Algorithm):
     def __init__(self, knowledge_base: KnowledgeBase):
         super().__init__(knowledge_base)
         self.name = "FC"
-        self.count = {}
-        self.inferred = {}
-        self.agenda = []
-        self.path = []
+        self.count = dict()
+        self.inferred = dict()
+        self.agenda = list()
+        self.path = list()
         self.query = HornSentence()
 
     def check_all(self):

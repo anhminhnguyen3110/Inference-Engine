@@ -1,4 +1,5 @@
 from Algorithm import Algorithm
+from BackwardChaining import BackwardChaining
 from KnowledgeBase import KnowledgeBase
 from TruthTable import TruthTable
 from ForwardChaining import ForwardChaining
@@ -16,6 +17,9 @@ class Engine:
             ans = self.algorithm.entails()
         if(self.method == "FC"):
             self.algorithm = ForwardChaining(self.knowledge_base)
+            ans = self.algorithm.entails()
+        if(self.method == "BC"):
+            self.algorithm = BackwardChaining(self.knowledge_base)
             ans = self.algorithm.entails()
             
         print(self.method, ":", ans)
