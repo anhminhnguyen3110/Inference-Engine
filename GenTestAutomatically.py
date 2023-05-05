@@ -1,19 +1,36 @@
+import math
 import random
+import string
 import subprocess
 from termcolor import colored
 
 def generate_horn_clause(num_symbols, number_of_horn_clauses=10):    
-    symbols = [chr(i) for i in range(ord('a'), ord('a') + num_symbols)]
+    symbols = [s for s in string.ascii_letters[:num_symbols]]
     
     horn_clauses = []
+    l = set()
     for i in range(num_symbols*number_of_horn_clauses):
         consequent = random.choice(symbols)
+        l.add(consequent)
         antecedents = random.sample(symbols, random.randint(1, num_symbols - 1))
+        for item in antecedents:
+            l.add(item)
+            if item == consequent:
+                antecedents.remove(item)
+        if(len(antecedents) == 0):
+            i-=1
+            continue
         clause = f"{'&'.join(antecedents)}=>{consequent}"
         horn_clauses.append(clause)
-    
+        
+    ask = random.choice(list(l))
+    length = math.ceil(len(l)/2)
+    for i in range(length):
+        x = random.choice(list(l))
+        while(x == ask or x in horn_clauses):
+            x = random.choice(list(l))
+        horn_clauses.append(x)
     tell = '; '.join(horn_clauses)
-    ask = random.choice(symbols)
     
     program = f'TELL\n{tell}\nASK\n{ask}\n'
     
@@ -38,11 +55,11 @@ def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_s
             
             result2 = subprocess.run([program2_path, method, input_test], capture_output=True)
             output2 = result2.stdout.decode().strip()
-            
+                
             if output1 == output2:
-                print(f"Test {i+1} with method {colored(method, 'yellow')}: {colored('PASS', 'green')}")
+                print(f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('PASS', 'green')}")
             else:
-                print(f"Test {i+1} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}")
+                print(f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}")
                 failed_test = f"./dist/failed_test_{i+1}.txt"
                 failed_test_out_put_my = f"./dist/failed_test_output_{i+1}_method_{method}_my.txt"
                 failed_test_out_put_other = f"./dist/failed_test_output_{i+1}_method_{method}_other.txt"
@@ -55,4 +72,4 @@ def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_s
         
 
 
-run_tests(10000, program1_path_1, program1_path_2, 2, 20, 2)
+run_tests(10000, program1_path_1, program1_path_2, 2, 10, 2)
