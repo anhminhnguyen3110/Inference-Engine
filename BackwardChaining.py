@@ -22,19 +22,19 @@ class BackwardChaining(Algorithm):
             if sentence.conclusion == goal:
                 for premise in sentence.premises:
                     check = True
-                    print("Sentence: ", goal, ", Premise: ", premise)
+                    # print("Sentence: ", goal, ", Premise: ", premise)
                     if(premise in chain):
-                        print("Reach here already in chain -> True: ", premise)
-                        print()
+                        # print("Reach here already in chain -> True: ", premise)
+                        # print()
                         continue
                     
                     if(premise in removed):
                         check = False
-                        print("Reach here already removed -> False: ", premise)
-                        print()
+                        # print("Reach here already removed -> False: ", premise)
+                        # print()
                         break
-                    print("Loop: ")
-                    print()
+                    # print("Loop: ")
+                    # print()
                     result, chain = self.check_all(removed, chain, premise)
                     check = check and result
                 if check:
