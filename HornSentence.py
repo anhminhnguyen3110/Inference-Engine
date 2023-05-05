@@ -24,7 +24,7 @@ class HornSentence(Sentence):
         return super().check(model)
 
     def __str__(self) -> str:
-        return super().__str__()
+        return super().__str__() + ", conclusion: " + str(self.conclusion) + ", premises: " + str(self.premises)
 
     
     
