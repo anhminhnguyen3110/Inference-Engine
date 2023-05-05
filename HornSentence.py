@@ -5,23 +5,26 @@ from constants import OPERANDS
 class HornSentence(Sentence):
     def __init__(self, raw_content: str = "", content: list = [], symbols: dict = dict()):
         super().__init__(raw_content, content, symbols)
-        self.conjuncts = []
+        self.conclusion = ""
+        self.premises = []
+        self.set_variables()
+
+    def set_variables(self):
         if len(self.content) == 0:
-            self.head = ""
+            self.conclusion = ""
         elif len(self.content) == 1:
-            self.head = self.content[0]
+            self.conclusion = self.content[0]
         else:
-            self.head = self.content[-2]
+            self.conclusion = self.content[-2]
             for element in self.content:
-                if element not in OPERANDS and element != self.head:
-                    self.conjuncts.append(element)
-        
+                if element not in OPERANDS and element != self.conclusion:
+                    self.premises.append(element)
+            
     def check(self, model) -> bool:
-        super().check(model)
-        
+        return super().check(model)
 
     def __str__(self) -> str:
-        super().__str__()
+        return super().__str__()
 
     
     

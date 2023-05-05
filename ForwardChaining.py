@@ -17,30 +17,30 @@ class ForwardChaining(Algorithm):
     def check_all(self):
         query = self.query.content[0]
         while len(self.agenda) > 0:
-            p = self.agenda.pop(0)
-            self.path.append(p)
-            if self.inferred[p] == False:
-                self.inferred[p] = True
-                for c in self.count:
-                    if p in c.conjuncts:
-                        self.count[c] -= 1
-                        if self.count[c] == 0:
-                            if c.head == query:
-                                self.path.append(c.head)
+            symbol = self.agenda.pop(0)
+            self.path.append(symbol)
+            if not self.inferred[symbol]:
+                self.inferred[symbol] = True
+                for sentence in self.count:
+                    if symbol in sentence.premises:
+                        self.count[sentence] -= 1
+                        if not self.count[sentence]:
+                            if sentence.conclusion == query:
+                                self.path.append(sentence.conclusion)
                                 return (True, self.path)
-                            self.agenda.append(c.head)
-        return False
+                            self.agenda.append(sentence.conclusion)
+        return False, []
 
-    def entails(self) -> tuple[bool, int]: 
+    def entails(self) -> tuple[bool, list]: 
         self.query = self.knowledge_base.query[0]
         q = self.query.content[0]
-        for sentence in self.knowledge_base.horn_sentences:
-            if len(sentence.conjuncts) > 0:
-                self.count[sentence] = len(sentence.conjuncts)
+        for sentence in self.knowledge_base.sentences:
+            if len(sentence.premises) > 0:
+                self.count[sentence] = len(sentence.premises)
             else:
-                if sentence.head == q:
+                if sentence.conclusion == q:
                     return (True, q)
-                self.agenda.append(sentence.head)
+                self.agenda.append(sentence.conclusion)
         for symbol in self.knowledge_base.symbols:
             self.inferred[symbol] = False
         return self.check_all()
