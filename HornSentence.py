@@ -16,8 +16,10 @@ class HornSentence(Sentence):
             self.conclusion = self.content[0]
         else:
             self.conclusion = self.content[-2]
-            for element in self.content:
-                if element not in OPERANDS and element != self.conclusion:
+            index = self.raw_content.index("=>")
+            self.left = self.raw_content[:index].strip()
+            for element in self.left:
+                if element not in OPERANDS:
                     self.premises.append(element)
             
     def check(self, model) -> bool:

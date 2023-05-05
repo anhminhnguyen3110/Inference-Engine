@@ -47,11 +47,11 @@ class BackwardChaining(Algorithm):
         self.query = self.knowledge_base.query[0]
         q = self.query.content[0]
         for sentence in self.knowledge_base.sentences:
+            if len(sentence.content) == 1 and sentence.conclusion == q:
+                return (True, q)
             if len(sentence.premises) > 0:
                 self.count[sentence] = len(sentence.premises)
             else:
-                if sentence.conclusion == q:
-                    return (True, q)
                 self.agenda[sentence.conclusion] = True
         for symbol in self.knowledge_base.symbols:
             self.inferred[symbol] = False
