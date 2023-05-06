@@ -43,7 +43,6 @@ class BackwardChaining(Algorithm):
     
     def entails(self) -> tuple[bool, int]: 
         self.query = self.knowledge_base.query[0]
-        q = self.query.content[0]
         for sentence in self.knowledge_base.sentences:
             if sentence.raw_content.__len__() == 1:
                 self.fact[sentence.raw_content[0]] = True
