@@ -6,13 +6,11 @@ class BackwardChaining(Algorithm):
     def __init__(self, knowledge_base: KnowledgeBase):
         super().__init__(knowledge_base)
         self.name = "BC"
-        self.count = dict()
-        self.inferred = dict()
-        self.agenda = dict()
+        self.fact = dict()
         self.query = HornSentence()
 
     def check_all(self, removed:dict(), chain: dict(), goal):
-        if(goal in self.agenda):
+        if(goal in self.fact):
             chain[goal] = True
             return True,chain
         
@@ -20,8 +18,8 @@ class BackwardChaining(Algorithm):
         
         for sentence in self.knowledge_base.sentences:
             if sentence.conclusion == goal:
+                check = True
                 for premise in sentence.premises:
-                    check = True
                     # print("Sentence: ", goal, ", Premise: ", premise)
                     if(premise in chain):
                         # print("Reach here already in chain -> True: ", premise)
@@ -47,14 +45,7 @@ class BackwardChaining(Algorithm):
         self.query = self.knowledge_base.query[0]
         q = self.query.content[0]
         for sentence in self.knowledge_base.sentences:
-            if len(sentence.content) == 1 and sentence.conclusion == q:
-                return (True, q)
-            if len(sentence.premises) > 0:
-                self.count[sentence] = len(sentence.premises)
-            else:
-                self.agenda[sentence.conclusion] = True
-        for symbol in self.knowledge_base.symbols:
-            self.inferred[symbol] = False
-        
+            if sentence.raw_content.__len__() == 1:
+                self.fact[sentence.raw_content[0]] = True
         ans = self.check_all(dict(), dict(),self.query.conclusion)
         return (ans[0], list(ans[1].keys()))
