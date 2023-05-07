@@ -9,12 +9,12 @@ class BackwardChaining(Algorithm):
         self.fact = dict()
         self.query = HornSentence()
 
-    def check_all(self, removed:dict(), chain: dict(), goal):
+    def check_all(self, visited:dict(), chain: dict(), goal):
         if(goal in self.fact):
             chain[goal] = True
             return True,chain
         
-        removed[goal] = True
+        visited[goal] = True
         
         for sentence in self.knowledge_base.sentences:
             if sentence.conclusion == goal:
@@ -26,14 +26,14 @@ class BackwardChaining(Algorithm):
                         # print()
                         continue
                     
-                    if(premise in removed):
+                    if(premise in visited):
                         check = False
-                        # print("Reach here already removed -> False: ", premise)
+                        # print("Reach here already visited -> False: ", premise)
                         # print()
                         break
                     # print("Loop: ")
                     # print()
-                    result, chain = self.check_all(removed, chain, premise)
+                    result, chain = self.check_all(visited, chain, premise)
                     check = check and result
                 if check:
                     chain[goal] = True

@@ -1,4 +1,4 @@
 TELL
-p2 => p3; p3 => p1; c => e; b&e => f; f&g => h; p1=>d; p1&p3 => c; a; b; p2;
+n&e&g&f&m=>l; j&l&m=>f; k&i&b&m&n&h=>l; c&h&j&f=>l; l&h&f&n&j&b=>g; b&n&f&h&i&g=>m; m&h=>i; j&d&c&a&b&g&n&i=>m; n&h&d&m&f&j&g&a&i&c&l=>e; e&m&i&g&a&d&h&b&k&n&c&j=>l; n&i&f&m&l&d&e&c&k&g&h&a=>b; a&h&j&e&l&n=>f; c&e&j&a&k&l&f&b=>i; g&f&e=>d; b&d&a&i&h=>m; d&a=>f; l&a&m&c&h&k&j&e&n&b&g=>f; b&g&m&e&k&d&c&a&n&j=>f; l&d&a&h&k&i&n&c&g&j&b=>e; h&g=>e; d&g&h&f&a=>i; h&d&e&j=>m; b&k=>n; d&i&n&h&k&l&e&j=>m; d&m&e&i&k&l&h&a&b&c=>j; e&l&k&a&f&h&i&d&b&j=>g; f&l&j&c&h&d&n&k&g&e&m=>b; l&j&n&g&h&c&e&f=>b; g&n&m&a&d&c&k&f=>b; b&h&i&c&j&k&n=>a; d&h&n&a&i=>k; a&i&n=>c; i&n=>g; g&b&d&j&a&f&h&l&k&e&m=>n; n&c&g&j&h=>d; g&n&a&b&i=>l; g&j&m&a&i&e&l&h&f&c&d&k=>n; e&k&c&n&f&g&i&j&h=>a; m&n&e&g=>l; e&b&d&h&g&l=>a; m&b=>l; f; c; h; g; j; n; m
 ASK
 d

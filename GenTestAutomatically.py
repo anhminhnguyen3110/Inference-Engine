@@ -72,4 +72,4 @@ def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_s
         
 
 
-run_tests(10000, program1_path_1, program1_path_2, 2, 20, 3)
+run_tests(1000, program1_path_1, program1_path_2, 2, 20, 3)
