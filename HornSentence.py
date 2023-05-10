@@ -1,5 +1,5 @@
 from Sentence import Sentence
-from common import execute_logic
+from common import execute_logic, get_content
 from constants import OPERANDS
 
 class HornSentence(Sentence):
@@ -10,14 +10,15 @@ class HornSentence(Sentence):
         self.set_variables()
 
     def set_variables(self):
-        if len(self.content) == 0:
+        new_content = get_content(self.raw_content)
+        if len(new_content) == 0:
             self.conclusion = ""
-        elif len(self.content) == 1:
-            self.conclusion = self.content[0]
+        elif len(new_content) == 1:
+            self.conclusion = new_content[0]
         else:
-            self.conclusion = self.content[-2]
-            index = self.raw_content.index("=>")
-            self.left = self.raw_content[:index].strip()
+            self.conclusion = new_content[-1]
+            index = new_content.index("=>")
+            self.left = new_content[:index]
             for element in self.left:
                 if element not in OPERANDS:
                     self.premises.append(element)
