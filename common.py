@@ -2,14 +2,16 @@
 import re
 
 from constants import OPERANDS
-
-#"(a <=> (c => ~d)) & b & (b => a)" => "a c d => <=> b & b a => &"
-def infix_to_post_fix(sentences: str):
+def get_content(sentences: str):
     regex_logical = r'\w+\d+|\w+|=>|<=>|~|\)|\(|&|\|\|'
-    stack = []
-    queue = []
     tokens = sentences.replace(" ", "")
     tokens = re.findall(regex_logical, tokens)
+    return tokens
+#"(a <=> (c => ~d)) & b & (b => a)" => "a c d => <=> b & b a => &"
+def infix_to_post_fix(sentences: str):
+    stack = []
+    queue = []
+    tokens = get_content(sentences)
     for t in tokens:
         if(t == "("):
             stack.append(t)
