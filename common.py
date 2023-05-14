@@ -59,7 +59,6 @@ def execute_logic(operator: str, operand1: bool, operand2: bool):
         return operand1 == operand2
         
 def infix_to_prefix(sequences):
-    print(sequences)
     sequences = reversed(sequences)
     new_sequence = []
     for s in sequences:
@@ -96,6 +95,8 @@ def reversed(text):
 def construct_expression_tree(sequence):
     stack = []
     expression = infix_to_prefix(sequence)[::-1]
+    if(len(expression) == 1):
+        return expression
     for token in expression:
         if token == "~":
             right = stack.pop()

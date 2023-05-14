@@ -99,4 +99,4 @@ def generate_random_propositional_logic(num_propositions, depth):
     expression = generate_random_expression(propositions, depth)
     return expression
 
-run_tests(1000, program1_path_1, program1_path_2, 2, 20, 3)
+# run_tests(1000, program1_path_1, program1_path_2, 2, 20, 3)
