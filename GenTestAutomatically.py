@@ -4,6 +4,8 @@ import string
 import subprocess
 from termcolor import colored
 
+from constants import OPERANDS
+
 def generate_horn_clause(num_symbols, number_of_horn_clauses=10):    
     symbols = [s for s in string.ascii_letters[:num_symbols]]
     
@@ -70,6 +72,31 @@ def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_s
                 with open(failed_test_out_put_other, "w") as f:
                     f.write(output2)
         
+def generate_propositions(num_propositions):
+    propositions = []
+    for i in range(num_propositions):
+        proposition = chr(ord('a') + i)
+        propositions.append(proposition)
+    return propositions
 
+def generate_random_expression(propositions, depth):
+    if depth == 0 or len(propositions) == 1:
+        return random.choice(propositions)
+    else:
+        operator = random.choices(list(OPERANDS.keys()), weights=list(OPERANDS.values()))[0]
+        if operator == '~':
+            operand = generate_random_expression(propositions, depth - 1)
+            return f"~{operand}"
+        else:
+            num_operands = random.randint(2, len(propositions))
+            operands = random.sample(propositions, num_operands)
+            subexpressions = [generate_random_expression([p for p in propositions if p != op], depth - 1) for op in operands]
+            expression = f" {operator} ".join(subexpressions)
+            return f"({expression})"
+
+def generate_random_propositional_logic(num_propositions, depth):
+    propositions = generate_propositions(num_propositions)
+    expression = generate_random_expression(propositions, depth)
+    return expression
 
 run_tests(1000, program1_path_1, program1_path_2, 2, 20, 3)

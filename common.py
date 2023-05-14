@@ -20,6 +20,9 @@ def infix_to_post_fix(sentences: str):
                 queue.append(stack.pop())
             stack.pop()
         elif(t in OPERANDS):
+            if(stack.__len__() > 0 and stack[-1] == "~" and t == "~"):
+                stack.pop()
+                continue
             while(len(stack) != 0 and stack[-1] != "(" and OPERANDS[t] <= OPERANDS[stack[-1]]):
                 queue.append(stack.pop())
             stack.append(t)
@@ -55,3 +58,55 @@ def execute_logic(operator: str, operand1: bool, operand2: bool):
     elif(operator == "<=>"):
         return operand1 == operand2
         
+def infix_to_prefix(sequences):
+    print(sequences)
+    sequences = reversed(sequences)
+    new_sequence = []
+    for s in sequences:
+        if(s == "("):
+            new_sequence.append(")")
+        elif(s == ")"):
+            new_sequence.append("(")
+        else:
+            new_sequence.append(s)
+    new_sequence = "".join(new_sequence)
+    prefix = (infix_to_post_fix(new_sequence))[::-1]
+    return prefix
+
+def reversed(text):
+    ret = []
+    i = 0
+    while (i < len(text)):
+        if(text[i] == "<" and text[i + 1] == "=" and text[i + 2] == ">"):
+            ret.insert(0, "@")
+            i += 3
+        elif(text[i] == "=" and text[i + 1] == ">"):
+            ret.insert(0, "#")
+            i += 2
+        else:
+            ret.insert(0, text[i])
+            i += 1
+    for s in ret:
+        if(s == "@"):
+            ret[ret.index(s)] = "<=>"
+        elif(s == "#"):
+            ret[ret.index(s)] = "=>"
+    return "".join(ret)
+              
+def construct_expression_tree(sequence):
+    stack = []
+    expression = infix_to_prefix(sequence)[::-1]
+    for token in expression:
+        if token == "~":
+            right = stack.pop()
+            node = [token, right]
+            stack.append(node)
+        elif token in OPERANDS:
+            left = stack.pop()
+            right = stack.pop()
+            node = [token, left, right]
+            stack.append(node)
+        else:
+            stack.append(token)
+
+    return stack[0]
