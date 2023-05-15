@@ -8,7 +8,7 @@ def get_content(sentences: str):
     tokens = re.findall(regex_logical, tokens)
     return tokens
 #"(a <=> (c => ~d)) & b & (b => a)" => "a c d => <=> b & b a => &"
-def infix_to_post_fix(sentences: str):
+def infix_to_postfix(sentences: str):
     stack = []
     queue = []
     tokens = get_content(sentences)
@@ -69,7 +69,7 @@ def infix_to_prefix(sequences):
         else:
             new_sequence.append(s)
     new_sequence = "".join(new_sequence)
-    prefix = (infix_to_post_fix(new_sequence))[::-1]
+    prefix = (infix_to_postfix(new_sequence))[::-1]
     return prefix
 
 def reversed(text):
