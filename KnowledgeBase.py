@@ -29,7 +29,7 @@ class KnowledgeBase:
         
 
     def add_sentence(self, sentence:str):
-        post_fix = infix_to_post_fix(sentence)
+        post_fix = infix_to_postfix(sentence)
         sentence_symbols = self.add_symbol(post_fix, True)
         if (self.method.lower() == "fc" or self.method.lower() == "bc"):
             self.sentences.append(HornSentence(sentence, post_fix, sentence_symbols))
@@ -38,7 +38,7 @@ class KnowledgeBase:
 
 
     def add_query(self, query:str):
-        post_fix = infix_to_post_fix(query)
+        post_fix = infix_to_postfix(query)
         sentence_symbols = self.add_symbol(post_fix, False)
         if (self.method.lower() == "fc" or self.method.lower() == "bc"):
             self.query.append(HornSentence(query, post_fix, sentence_symbols))

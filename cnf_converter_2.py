@@ -2,6 +2,7 @@
 from sympy import *
 
 from GenTestAutomatically import generate_random_propositional_logic
+from common import infix_to_postfix
 from constants import OPERANDS
 
 num_propositions = 5
@@ -39,9 +40,10 @@ def postfix_to_infix(sequences):
 
 
 def to_cnf_form(sequences):
-	symbol_list = symbols(list(get_symbols_list(sequences)))  
-	random_logic_expression = postfix_to_infix(sequences)
+    sequences = infix_to_postfix(sequences)
+    symbol_list = symbols(list(get_symbols_list(sequences)))  
+    expression = postfix_to_infix(sequences)
 
-	postfix = str(to_cnf(random_logic_expression))
-	postfix = postfix.replace("|", "||")			
-	return postfix
+    postfix = str(to_cnf(expression))
+    postfix = postfix.replace("|", "||")			
+    return postfix
