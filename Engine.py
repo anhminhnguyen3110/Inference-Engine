@@ -3,7 +3,7 @@ from BackwardChaining import BackwardChaining
 from KnowledgeBase import KnowledgeBase
 from TruthTable import TruthTable
 from ForwardChaining import ForwardChaining
-
+from DPLL import DPLL
 class Engine:
     def __init__(self) -> None:
         self.method = "tt"
@@ -22,8 +22,11 @@ class Engine:
         if(self.method == "bc"):
             self.algorithm = BackwardChaining(self.knowledge_base)
             ans = self.algorithm.entails()
-            
+        if(self.method == "dpll"):
+            self.algorithm = DPLL(self.knowledge_base)
+            ans = self.algorithm.entails()
         if(ans[0] == True):
+            
             print("YES: ", end="")
             if(self.method == "bc" or self.method == "fc"):
                 for i, val in enumerate(ans[1]):
@@ -32,8 +35,10 @@ class Engine:
                         print(", ", end="")
                     else:
                         print()
-            else:
+            elif(self.method == "tt"):
                 print(ans[1])
+            elif(self.method == "dpll"):
+                return
         else:
             print("NO")
         return True
