@@ -47,3 +47,5 @@ def to_cnf_form(sequences):
     postfix = str(to_cnf(expression))
     postfix = postfix.replace("|", "||")			
     return postfix
+
+#print(to_cnf_form(random_logic_expression))
