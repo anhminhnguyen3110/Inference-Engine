@@ -3,6 +3,7 @@ from BackwardChaining import BackwardChaining
 from KnowledgeBase import KnowledgeBase
 from TruthTable import TruthTable
 from ForwardChaining import ForwardChaining
+from Resolution import Resolution
 
 class Engine:
     def __init__(self) -> None:
@@ -21,6 +22,9 @@ class Engine:
             ans = self.algorithm.entails()
         if(self.method == "bc"):
             self.algorithm = BackwardChaining(self.knowledge_base)
+            ans = self.algorithm.entails()
+        if(self.method == "resolution"):
+            self.algorithm = Resolution(self.knowledge_base)
             ans = self.algorithm.entails()
             
         if(ans[0] == True):
