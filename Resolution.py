@@ -1,38 +1,63 @@
-def PL_RESOLVE(ci, cj):
-    resolvents = []
-    if ci.count('~') == 1 or cj.count('~') == 1:
-        for literal_i in ci:
-            for literal_j in cj:
-                if literal_i == ['~', literal_j] or literal_j == ['~', literal_i]:
-                    resolvent = [x for x in (ci + cj) if x != literal_i and x != literal_j]
-                    if not resolvent:
-                        resolvent = [[]]  # Empty clause represented as [[]]
-                    resolvents.append(resolvent)
+from cnf_converter_2 import *
+from HornSentence import HornSentence
+from KnowledgeBase import KnowledgeBase
+from Algorithm import Algorithm
+
+class Resolution(Algorithm):
+    def __init__(self, knowledge_base: KnowledgeBase):
+        super().__init__(knowledge_base)
+        self.name = "Resolution"
+
+    def negate_literal(self, literal:str) -> str:
+        if literal.startswith("~"):
+            return literal[1:]
+        else:
+            return "~" + literal
+        
+    def is_inverse(self, literal1: str, literal2: str) -> bool:
+        return self.negate_literal(literal1) == literal2
+
+    def PL_RESOLVE(self, Ci: list[str], Cj: list[str]) -> list[list[str]]:
+        resolvents = []
+        for i in range(len(Ci)):
+            for j in range(len(Cj)):
+                if self.is_inverse(Ci[i], Cj[j]):
+                    resolvent = [x for x in Ci if x != Ci[i]] + [x for x in Cj if x != Cj[j]]
+                    if resolvent not in resolvents:
+                        resolvents.append(resolvent)
         return resolvents
 
+    def entails(self) -> tuple[bool, list]:
+        query = self.knowledge_base.query[0]
+        q_content = query.raw_content
+        list_sentence = list()
+        list_clauses = list()
+        cnf_q = to_cnf_form(self.negate_literal(q_content))
+        list_sentence.append(cnf_q)
 
-def PL_RESOLUTION(KB, alpha):
-    clauses = KB + [['~', alpha]]
-    new = []
+        for sentence in self.knowledge_base.sentences:
+            cnf_sentence = to_cnf_form(sentence.raw_content)
+            list_sentence.append(cnf_sentence)
 
-    while True:
-        for i in range(len(clauses)):
-            for j in range(i+1, len(clauses)):
-                resolvents = PL_RESOLVE(clauses[i], clauses[j])
-                for resolvent in resolvents:
-                    if resolvent == [[]]:
-                        return True  # Empty clause found, α is satisfiable
-                    if resolvent not in new:
-                        new.append(resolvent)
-        
-        if all(clause in clauses for clause in new):
-            return False  # New clauses are already present in the set of clauses
-        
-        clauses += new
+        for clause in list_sentence:
+            split_clause = clause.split('&')
+            list_clauses.extend([c.split(' || ') for c in split_clause])
 
-KB = ['&', ['~', 'a'], ['||', 'b', 'c'], 'd', 'c']
-alpha = '~a'
+        while True:
+            new = list()
+            for i in range(len(list_clauses) - 1):
+                for j in range(i + 1, len(list_clauses)):
+                    resolvents = self.PL_RESOLVE(list_clauses[i], list_clauses[j])
+                    if [] in resolvents:
+                        return True, []
+                    new.extend(resolvent for resolvent in resolvents if resolvent not in new)
 
-result = PL_RESOLUTION(KB, alpha)
+            if len(new) == 0:
+                break
+            
+            if all(c in list_clauses for c in new):
+                break
 
-print(result)
+            list_clauses.extend(clause for clause in new if clause not in list_clauses)
+
+        return False, []
