@@ -1,7 +1,7 @@
 
 from sympy import *
 
-from GenTestAutomatically import generate_random_propositional_logic
+from GenHornClauseTest import generate_random_propositional_logic
 from common import infix_to_postfix
 from constants import OPERANDS
 

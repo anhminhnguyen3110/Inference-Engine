@@ -1,13 +1,7 @@
 import copy
-from GenTestAutomatically import generate_random_propositional_logic
+from GenHornClauseTest import generate_random_propositional_logic
 from common import construct_expression_tree
-
-# Example usage
-num_propositions = 5
-depth = 2
-
-random_logic_expression = generate_random_propositional_logic(num_propositions, depth)
-                                               
+                                  
 def association_perform(expression_tree): #  ['&', ['&', 'a', 'b'], ['&', 'c', 'd']] => ['&', 'a', 'b', 'c', 'd']  
     if(expression_tree[0] == "&"):
         temp_expression_tree = copy.deepcopy(expression_tree) # deep copy because dont want to change tmp_expression_tree
