@@ -4,6 +4,7 @@ from KnowledgeBase import KnowledgeBase
 from TruthTable import TruthTable
 from ForwardChaining import ForwardChaining
 from DPLL import DPLL
+from Resolution import Resolution
 class Engine:
     def __init__(self) -> None:
         self.method = "tt"
@@ -24,6 +25,9 @@ class Engine:
             ans = self.algorithm.entails()
         if(self.method == "dpll"):
             self.algorithm = DPLL(self.knowledge_base)
+            ans = self.algorithm.entails()
+        if(self.method == "resolution"):
+            self.algorithm = Resolution(self.knowledge_base)
             ans = self.algorithm.entails()
         if(ans[0] == True):
             print("YES: ", end="")
