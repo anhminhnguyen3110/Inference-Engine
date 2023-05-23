@@ -1,4 +1,0 @@
-TELL
-a&c&b=>d; a=>b; a=>a; b&a=>b
-ASK
-a

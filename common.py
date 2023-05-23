@@ -7,6 +7,7 @@ def get_content(sentences: str):
     tokens = sentences.replace(" ", "")
     tokens = re.findall(regex_logical, tokens)
     return tokens
+
 #"(a <=> (c => ~d)) & b & (b => a)" => "a c d => <=> b & b a => &"
 def infix_to_postfix(sentences: str):
     stack = []
@@ -109,5 +110,4 @@ def construct_expression_tree(sequence):
             stack.append(node)
         else:
             stack.append(token)
-
     return stack[0]

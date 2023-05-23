@@ -182,9 +182,7 @@ def cnf_converter(expression_tree):
         remove_stand_alone_sub_trees(expression_tree)
         check_if_tree_contain_multilayer(expression_tree)
         square_parentheses_eliminating(expression_tree)
-    
-    print(expression_tree)
-    
+    return expression_tree    
     
 def sort_prefix_logic(expression):
     if isinstance(expression, list):
@@ -211,6 +209,3 @@ def check_if_tree_contain_multilayer(expression_tree):
     for sub_tree in expression_tree:
         if(len(sub_tree)>1):
             check_if_tree_contain_multilayer(sub_tree)
-            
-print(construct_expression_tree(random_logic_expression))
-cnf_converter(construct_expression_tree(random_logic_expression))

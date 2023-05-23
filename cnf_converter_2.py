@@ -1,13 +1,7 @@
 
 from sympy import *
-
-from GenHornClauseTest import generate_random_propositional_logic
 from common import infix_to_postfix
 from constants import OPERANDS
-
-num_propositions = 5
-depth = 2
-random_logic_expression = generate_random_propositional_logic(num_propositions, depth)
 
 def get_symbols_list(sequences):
     symbols_list = set()
