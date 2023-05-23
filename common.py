@@ -73,6 +73,8 @@ def infix_to_prefix(sequences):
     prefix = (infix_to_postfix(new_sequence))[::-1]
     return prefix
 
+
+
 def reversed(text):
     ret = []
     i = 0

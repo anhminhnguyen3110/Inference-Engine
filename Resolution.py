@@ -1,5 +1,4 @@
-from cnf_converter_2 import *
-from HornSentence import HornSentence
+from CNF_Converter import to_cnf_form
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 
