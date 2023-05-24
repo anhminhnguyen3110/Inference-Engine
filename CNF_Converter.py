@@ -156,7 +156,7 @@ def duplication_eliminating(expression_tree):
             duplication_eliminating(element)                
             
 from sympy import *
-from common import infix_to_postfix
+from common import infix_to_postfix, postfix_to_infix
 from constants import OPERANDS
 
 def cnf_converter(expression_tree):
@@ -211,29 +211,6 @@ def check_if_tree_contain_multilayer(expression_tree):
     for sub_tree in expression_tree:
         if(len(sub_tree)>1):
             check_if_tree_contain_multilayer(sub_tree)
-
-def postfix_to_infix(sequences):
-    stack = []
-    for token in sequences:
-        if token not in OPERANDS:
-            stack.append(token)
-        else:
-            if token == '~':
-                right = stack.pop()
-                stack.append(f'(~{right})')
-            else:
-                right = stack.pop()
-                left = stack.pop()
-                if token == '=>':
-                    stack.append(f'(~{left} | {right})')
-                elif token == '<=>':
-                    stack.append(f'(({left} & {right}) | (~{left} & ~{right}))')
-                elif token == "||":
-                    stack.append(f'({left} | {right})')
-                else:
-                    stack.append(f'({left} {token} {right})')
-    return stack.pop()
-
 
 def to_cnf_form(sequences):
     sequences = infix_to_postfix(sequences)
