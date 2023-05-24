@@ -1,8 +1,4 @@
-from sympy.parsing.sympy_parser import parse_expr
 from common import construct_expression_tree, infix_to_postfix, postfix_to_infix, prefix_to_infix
-# from constants import DEPTH, NUMBER_OF_GENERAL_CLAUSES, NUMBER_OF_SYMBOLS_FIX
-from sympy import *
-from termcolor import colored
     
 def biconditional_eliminating(expression_tree):
     if type(expression_tree) is str:
@@ -231,12 +227,7 @@ def check_duplication_of_nested_array(expression_tree, exist) -> bool:
                 return False
     return True
 
-def print_test(exp):
-    if(exp):
-        print(colored("Test passed", "green"))
-        pass
-    else:
-        print(colored("Test failed", "red"))
+
 
 def cnf_converter(expression_tree):
     if(type(expression_tree[0]) == str and len(expression_tree)==1):
@@ -254,21 +245,9 @@ def cnf_converter(expression_tree):
     expression_tree = duplication_sub_expression_eliminating(expression_tree)
     return expression_tree
 
-def testCNF(sequences):
-    sequences = sequences.split("; ")
-    for sequence in sequences:
-        if(sequence == " "):
-            continue
-        sequence_x = infix_to_postfix(sequence)
-        expression = postfix_to_infix(sequence_x)
-        sym_converter = to_cnf(expression)
-        my_converter = prefix_to_infix(cnf_converter(construct_expression_tree(expression.replace("|", "||"))))
-        result = sym_converter.equals(parse_expr(my_converter.replace("||", "|").replace("=>", ">>")))
-        print_test(result)    
-
 def to_cnf_form(sequence):
     sequence_x = infix_to_postfix(sequence)
-    expression = postfix_to_infix(sequence_x)
+    expression = postfix_to_infix(sequence_x).replace("|", "||")
     my_converter = prefix_to_infix(cnf_converter(construct_expression_tree(expression)))
     if my_converter[0] == '(' and my_converter[-1] == ')':
         my_converter = my_converter[1:-1]

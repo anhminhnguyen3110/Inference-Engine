@@ -1,4 +1,3 @@
-from typing import Sequence
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 from Sentence import Sentence

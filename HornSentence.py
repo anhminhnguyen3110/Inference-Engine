@@ -1,5 +1,5 @@
 from Sentence import Sentence
-from common import execute_logic, get_content
+from common import get_content
 from constants import OPERANDS
 
 class HornSentence(Sentence):

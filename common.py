@@ -1,6 +1,5 @@
 
 import re
-
 from termcolor import colored
 
 from constants import OPERANDS, TEST_FOLDER_NAME
@@ -10,7 +9,6 @@ def get_content(sentences: str):
     tokens = re.findall(regex_logical, tokens)
     return tokens
 
-#"(a <=> (c => ~d)) & b & (b => a)" => "a c d => <=> b & b a => &"
 def infix_to_postfix(sentences: str):
     stack = []
     queue = []
@@ -113,11 +111,11 @@ def postfix_to_infix(sequences):
                 right = stack.pop()
                 left = stack.pop()
                 if token == '=>':
-                    stack.append(f'(~{left} || {right})')
+                    stack.append(f'(~{left} | {right})')
                 elif token == '<=>':
-                    stack.append(f'(({left} & {right}) || (~{left} & ~{right}))')
+                    stack.append(f'(({left} & {right}) | (~{left} & ~{right}))')
                 elif token == "||":
-                    stack.append(f'({left} || {right})')
+                    stack.append(f'({left} | {right})')
                 else:
                     stack.append(f'({left} {token} {right})')
     return stack.pop()
@@ -134,7 +132,6 @@ def fail(test, method, output1, output2, index):
     with open(failed_test_out_put_other, "w") as f:
         f.write(str(output2 if "YES" else "NO"))
 
-# sequence has form like this ['||', 'c', ['~', '1p'], ['~', '3p']]        
 def prefix_to_infix(expression):
     if isinstance(expression, str):
         return expression
