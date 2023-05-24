@@ -2,6 +2,7 @@ from HornSentence import HornSentence
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 
+
 class ForwardChaining(Algorithm):
     def __init__(self, knowledge_base: KnowledgeBase):
         super().__init__(knowledge_base)
@@ -29,7 +30,7 @@ class ForwardChaining(Algorithm):
                             self.agenda.append(sentence.conclusion)
         return False, []
 
-    def entails(self) -> tuple[bool, list]: 
+    def entails(self) -> tuple[bool, list]:
         self.query = self.knowledge_base.query[0]
         q = self.query.content[0]
         for sentence in self.knowledge_base.sentences:
@@ -42,11 +43,3 @@ class ForwardChaining(Algorithm):
         for symbol in self.knowledge_base.symbols:
             self.inferred[symbol] = False
         return self.check_all()
-        
-
-       
-
-
-       
-
-
