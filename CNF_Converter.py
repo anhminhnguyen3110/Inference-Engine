@@ -1,221 +1,275 @@
-import copy
-                                  
-def association_perform(expression_tree): #  ['&', ['&', 'a', 'b'], ['&', 'c', 'd']] => ['&', 'a', 'b', 'c', 'd']  
-    if(expression_tree[0] == "&"):
-        temp_expression_tree = copy.deepcopy(expression_tree) # deep copy because dont want to change tmp_expression_tree
-        del expression_tree[:]
-        for literal in temp_expression_tree:
-            if literal == "&":
-                expression_tree.append(literal)
-            else:
-                if literal[0] != "&":
-                    expression_tree.append(literal)
-                else:
-                    for sub_literal in literal:
-                        if sub_literal == "&":
-                            continue
-                        else:
-                            expression_tree.append(sub_literal)
-                            
-    if(expression_tree[0] == "||"):
-        temp_expression_tree = copy.deepcopy(expression_tree) # deep copy because dont want to change tmp_expression_tree
-        del expression_tree[:]
-        for literal in temp_expression_tree:
-            if literal == "||":
-                expression_tree.append(literal)
-            else:
-                if literal[0] != "||":
-                    expression_tree.append(literal)
-                else:
-                    for sub_literal in literal:
-                        if sub_literal == "||":
-                            continue
-                        else:
-                            expression_tree.append(sub_literal)
-                            
-    for element in expression_tree:
-        if len(element) > 1:
-            association_perform(element)
-
-def distribution_perform(expression_tree): #Distributive law to convert A or (B and C) to (A or B) and (A or C) => CNF
-    if(expression_tree[0] == "||"):
-        # expression_tree[0] will be ||, expression_tree[1] will be a single proposition, expression_tree[2] will be a list of propositions 
-        if(len(expression_tree[2]) > 1 and expression_tree[2][0] == "&"): # (A or (B and C)) = (A or B) and (A or C)
-            left = expression_tree[1]
-            right = expression_tree[2]
-            del expression_tree[:]
-            expression_tree.append("&")
-            for temp_right in right: # (A or B) and (A or C)
-                if (temp_right == "&"): # the first element is "&"
-                    continue
-                expression_tree.append(["||", left, temp_right]) # append [A, (B or C)]
-        # expression_tree[0] will be ||, expression_tree[1] will be a list of propositions, expression_tree[2] will be a single proposition
-        elif(len(expression_tree[1]) > 1 and expression_tree[1][0] == "&"): # ((A and B) or C) = (A or C) and (B or C)
-            left = expression_tree[1]
-            right = expression_tree[2]
-            del expression_tree[:]
-            expression_tree.append("&")
-            for temp_left in left: # (A or B) and (A or C)
-                if (temp_left == "&"): # the first element is "&"
-                    continue
-                expression_tree.append(["||", temp_left, right]) # append [(A or B), C]
-        
-    for element in expression_tree: # recursion
-        if len(element) > 1:
-            distribution_perform(element)
-
-def negation_eliminating(expression_tree): #Demorgan
-    if(expression_tree[0] == "~"):
-        literal = expression_tree[1]
-        
-        if literal[0] == "~":  # double negation: ~~A = A
-            del expression_tree[:]
-            if(len(literal) == 1):                
-                expression_tree.append(literal[1])
-            else:
-                for s in literal[1]:
-                    expression_tree.append(s)
-                    
-                if(len(expression_tree) > 1):
-                    negation_eliminating(expression_tree)
-        
-        elif literal[0] == "||": # DeMorgan: ~(A or B) = ~A and ~B
-            del expression_tree[:]
-            expression_tree.append("&")
-            for s in literal:                
-                if s == "||": # the first element is "||"
-                    continue
-                else:
-                    expression_tree.append(["~", s])
-        
-        elif literal[0] == "&": # DeMorgan: ~(A and B) = ~A or ~B
-            del expression_tree[:]
-            expression_tree.append("||")
-            for s in literal:
-                if s == "&":  # the first element is "&"
-                    continue
-                else:
-                    expression_tree.append(["~", s])
-                
-    for element in expression_tree: # recursion
-        if(len(element) > 1):
-            negation_eliminating(element)
+from sympy.parsing.sympy_parser import parse_expr
+from common import construct_expression_tree, infix_to_postfix, postfix_to_infix, prefix_to_infix
+# from constants import DEPTH, NUMBER_OF_GENERAL_CLAUSES, NUMBER_OF_SYMBOLS_FIX
+from sympy import *
+from termcolor import colored
+    
+def biconditional_eliminating(expression_tree):
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list and expression_tree[0] == "<=>":
+        return(["&",
+                ["=>",
+                 biconditional_eliminating(expression_tree[1]),
+                 biconditional_eliminating(expression_tree[2])],
+                ["=>",
+                 biconditional_eliminating(expression_tree[2]),
+                 biconditional_eliminating(expression_tree[1])]])
+    else:
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(biconditional_eliminating(sub_expression_tree))
+        return result
 
 def implies_eliminating(expression_tree):
-    if(expression_tree[0] == "=>"):
-        left = expression_tree[1]
-        expression_tree[0] = "||"
-        expression_tree[1] = ["~", left]
-    for element in expression_tree:
-        if(len(element) > 1):
-            implies_eliminating(element)
-
-def bidirectional_eliminating(expression_tree):
-    if(expression_tree[0] == "<=>"):
-        left = expression_tree[1]
-        right = expression_tree[2]
-        expression_tree[0] = "&"
-        expression_tree[1] = ["=>", left, right]
-        expression_tree[2] = ["=>", right, left]
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list and expression_tree[0] == "=>":
+        return (["||", 
+                 ["~", implies_eliminating(expression_tree[1])],
+                    implies_eliminating(expression_tree[2])])
+    else:
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(implies_eliminating(sub_expression_tree))
+        return result
     
-    for element in expression_tree:
-        if(len(element) > 1):
-            bidirectional_eliminating(element)
+# retrain
+def negation_eliminating(expression_tree): #Demorgan
+    old_expression_tree = negation_eliminating_training(expression_tree)
+    if old_expression_tree == expression_tree: # if the training algorithm is converge
+        return expression_tree
+    else: # retrain
+        return negation_eliminating(old_expression_tree) # retrain
 
-def square_parentheses_eliminating(expression_tree):
-    for ind, sub_expression_tree in enumerate(expression_tree):
-        if(len(sub_expression_tree) == 1 and type(sub_expression_tree) == list): # if the sub_expression_tree is a single proposition
-            expression_tree[ind] = sub_expression_tree[0]
-        elif(len(sub_expression_tree) > 1):
-            square_parentheses_eliminating(sub_expression_tree)
+def negation_eliminating_training(expression_tree):
+    if type(expression_tree) is str:
+        return expression_tree
+    
+    elif type(expression_tree) is list and expression_tree[0] == "~" and type(expression_tree[1]) is list and expression_tree[1][0] == "&":
+        result = ["||"]
+        for sub_expression_tree in expression_tree[1][1:]:
+            result.append(negation_eliminating(["~", sub_expression_tree]))
+        return result
+    elif type(expression_tree) is list and expression_tree[0] == "~" and type(expression_tree[1]) is list and expression_tree[1][0] == "||":
+        result = ["&"]
+        for sub_expression_tree in expression_tree[1][1:]:
+            result.append(negation_eliminating(["~", sub_expression_tree]))
+        return result
+    else:
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(negation_eliminating(sub_expression_tree))
+        return result
 
-def duplication_eliminating(expression_tree):
-    delete_sub_tree = []
-    if(expression_tree[0] == "&" or expression_tree[0] == "||"):
-        for x in range(0, len(expression_tree)):
-            for y in range(x+1, len(expression_tree)):
-                sub_tree_1 = copy.deepcopy(expression_tree[x])
-                sub_tree_2 = copy.deepcopy(expression_tree[y])
-                if(sub_tree_1 == sub_tree_2):
-                    delete_sub_tree.append(expression_tree[y])
-    if(len(delete_sub_tree) >= 1):
-        temp_expression_tree = []
-        checked = []
-        for sub_tree in expression_tree:
-            if(sub_tree in delete_sub_tree and sub_tree not in checked):
-                checked.append(sub_tree)
-                continue
+def doubleNegEleminating(expression):
+    if type(expression) is str:
+        return expression
+    elif type(expression) is list and expression[0] == "~" and type(expression[1]) is list and expression[1][0] == "~":
+        return(doubleNegEleminating(expression[1][1]))
+    else:
+        result = [expression[0]]
+        for sub_expression in expression[1:]:
+            result.append(doubleNegEleminating(sub_expression))
+        return result
+    
+
+# this function ensure that every sub_expression_tree is in binary form (e.g. ["&", "p", "q", "r", "s"] => ["&", "p", ["&", "q", ["&", "r", "s"]]])
+def groupToBinaryForm(expression_tree): 
+    if type(expression_tree) is str:
+        return expression_tree   
+    
+    # if the expression_tree is in the form of ["&", "p", "q", "r", "s"]
+    elif type(expression_tree) is list and expression_tree[0] == "&" and len(expression_tree) > 3: 
+        result = ["&", expression_tree[1]]
+        for sub_expression_tree in expression_tree[2:]:
+            result.append(groupToBinaryForm(["&", sub_expression_tree]))
+        return result
+    
+    # if the expression_tree is in the form of ["||", "p", "q", "r", "s"]    
+    elif type(expression_tree) is list and expression_tree[0] == "||" and len(expression_tree) > 3: 
+        result = ["||", expression_tree[1]]
+        for sub_expression_tree in expression_tree[2:]:
+            result.append(groupToBinaryForm(["||", sub_expression_tree]))
+        return result
+    
+    # check another sub_expression_tree
+    else:
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(groupToBinaryForm(sub_expression_tree))
+        return result
+
+# only works on binary connectives
+def distribution_perform(expression_tree): #Distributive law to convert A or (B and C) to (A or B) and (A or C) => CNF
+    # this function is still using training algorithm to execute
+    old_expression_tree = distribution_perform_training(expression_tree)
+    if old_expression_tree == expression_tree: # if the training algorithm is converge
+        return expression_tree
+    else: # retrain
+        return distribution_perform(old_expression_tree)
+
+def distribution_perform_training(expression_tree): #Distributive law to convert A or (B and C) to (A or B) and (A or C) => CNF
+    if type(expression_tree) is str:
+        return expression_tree
+    
+    # Convert A or (B and C) to (A or B) and (A or C)
+    elif type(expression_tree) is list and expression_tree[0] == "||" and type(expression_tree[1]) is list and expression_tree[1][0] == "&":
+        result = ["&"]
+        for sub_expression_tree in expression_tree[1][1:]:
+            result.append(distribution_perform(["||", sub_expression_tree, expression_tree[2]]))
+        return result
+    
+    # Convert (B and C) or A to (A or B) and (A or C)
+    elif type(expression_tree) is list and expression_tree[0] == "||" and type(expression_tree[2]) is list and expression_tree[2][0] == "&":
+        result = ["&"]
+        for sub_expression_tree in expression_tree[2][1:]:
+            result.append(distribution_perform(["||", sub_expression_tree, expression_tree[1]]))
+        return result
+    
+    else:
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(distribution_perform(sub_expression_tree))
+        return result
+
+def and_association_perform(expression_tree):
+    old_expression_tree = and_association_perform_training(expression_tree)
+    if old_expression_tree == expression_tree: # if the training algorithm is converge
+        return expression_tree
+    else: # retrain
+        return and_association_perform(old_expression_tree)
+# ["&", ["&", "a", "b"], ["&", "c", "d"]] -> ['&', 'a', 'b', 'c', 'd']
+def and_association_perform_training(expression_tree):
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list and expression_tree[0] == "&":
+        result = ["&"]
+        for sub_expression_tree in expression_tree[1:]:
+            if type(sub_expression_tree) is list and sub_expression_tree[0] == "&":
+                result += sub_expression_tree[1:]
             else:
-                temp_expression_tree.append(sub_tree)
-        del expression_tree[:]
-        for sub_tree in temp_expression_tree:
-            expression_tree.append(sub_tree)
-        
-    for element in expression_tree:
-        if(len(element) > 1):
-            duplication_eliminating(element)                
-            
-from sympy import *
-from common import infix_to_postfix, postfix_to_infix
-from constants import OPERANDS
+                result.append(sub_expression_tree)
+        return result
+    else: 
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(and_association_perform(sub_expression_tree))
+        return result
+    
+def association_perform(expression_tree, expression):
+    old_expression_tree = association_perform_training(expression_tree, expression)
+    if old_expression_tree == expression_tree: # if the training algorithm is converge
+        return expression_tree
+    else: # retrain
+        return association_perform(old_expression_tree, expression)
+    
+# ["&", ["&", "a", "b"], ["&", "c", "d"]] -> ['&', 'a', 'b', 'c', 'd']
+def association_perform_training(expression_tree, expression):
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list and expression_tree[0] == expression:
+        result = [expression]
+        for sub_expression_tree in expression_tree[1:]:
+            if type(sub_expression_tree) is list and sub_expression_tree[0] == expression:
+                result += sub_expression_tree[1:]
+            else:
+                result.append(sub_expression_tree)
+        return result
+    else: 
+        result = [expression_tree[0]]
+        for sub_expression_tree in expression_tree[1:]:
+            result.append(association_perform(sub_expression_tree, expression))
+        return result
+
+def duplication_symbols_eliminating(expression_tree): # ["&", "b", "c", "b", "c"] => ["&", "b", "c"]
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list:
+        if expression_tree[0] == "~":
+            return expression_tree
+        elif expression_tree[0] == "&":
+            result = ["&"]
+            for sub_expression_tree in expression_tree[1:]:
+                    result.append(duplication_symbols_eliminating(sub_expression_tree))
+            return result
+        elif expression_tree[0] == "||":
+            exist = []
+            for sub_expression_tree in expression_tree[1:]:
+                if sub_expression_tree not in exist:
+                    exist.append(sub_expression_tree)
+            if len(exist) == 1:
+                return exist[0]
+            else:
+                return ["||"] + exist
+
+def duplication_sub_expression_eliminating(expression_tree): # ["&", ["&", "b", "c"], ["&", "b", "c"]] => ["&", "b", "c"]
+    if type(expression_tree) is str:
+        return expression_tree
+    elif type(expression_tree) is list:
+        if expression_tree[0] == "~":
+            return expression_tree
+        elif expression_tree[0] == "||":
+            return expression_tree
+        elif expression_tree[0] == "&":
+            exist = []
+            for sub_expression_tree in expression_tree[1:]:
+                if(check_duplication_of_nested_array(sub_expression_tree, exist)):
+                    exist.append(sub_expression_tree)
+            if len(exist) == 1:
+                return exist[0]
+            else:
+                return ["&"] + exist
+
+def check_duplication_of_nested_array(expression_tree, exist) -> bool:
+    for element in exist:
+        if type(expression_tree) is str or type(element) is str:
+            if expression_tree == element:
+                return False
+        elif len(expression_tree) == len(element):
+            if len([i for i in expression_tree[1:] if i not in element[1:]]) == 0:
+                return False
+    return True
+
+def print_test(exp):
+    if(exp):
+        print(colored("Test passed", "green"))
+        pass
+    else:
+        print(colored("Test failed", "red"))
 
 def cnf_converter(expression_tree):
-    bidirectional_eliminating(expression_tree)
-    implies_eliminating(expression_tree) 
-    negation_eliminating(expression_tree)
-    distribution_perform(expression_tree)
-    association_perform(expression_tree)
+    if(type(expression_tree[0]) == str and len(expression_tree)==1):
+        return expression_tree[0]
     
-    square_parentheses_eliminating(expression_tree)
-    
-    sort_prefix_logic(expression_tree)
-    duplication_eliminating(expression_tree)
-    remove_stand_alone_sub_trees(expression_tree)
-    check_if_tree_contain_multilayer(expression_tree)
-    square_parentheses_eliminating(expression_tree)
-    
-    old = None
-    while(old != expression_tree):
-        old = copy.deepcopy(expression_tree)
-        distribution_perform(expression_tree)
-        association_perform(expression_tree)            
-        sort_prefix_logic(expression_tree)
-        duplication_eliminating(expression_tree)
-        remove_stand_alone_sub_trees(expression_tree)
-        check_if_tree_contain_multilayer(expression_tree)
-        square_parentheses_eliminating(expression_tree)
-    return expression_tree    
-    
-def sort_prefix_logic(expression):
-    if isinstance(expression, list):
-        expression[1:] = sorted(expression[1:], key=lambda x: (isinstance(x, list), str(x)))
-        for i in range(1, len(expression)):
-            sort_prefix_logic(expression[i])
-    return expression
+    expression_tree = biconditional_eliminating(expression_tree)
+    expression_tree = implies_eliminating(expression_tree) 
+    expression_tree = negation_eliminating(expression_tree)
+    expression_tree = doubleNegEleminating(expression_tree)
+    expression_tree = groupToBinaryForm(expression_tree)
+    expression_tree = distribution_perform(expression_tree)
+    expression_tree = association_perform(expression_tree, "&")
+    expression_tree = association_perform(expression_tree, "||")
+    expression_tree = duplication_symbols_eliminating(expression_tree)
+    expression_tree = duplication_sub_expression_eliminating(expression_tree)
+    return expression_tree
 
-def remove_stand_alone_sub_trees(expression_tree): # remove stand alone sub_trees (e.g. [["&", "a", "b"], 'a'] -> ["&", "a", "b"])
-    if(len(expression_tree)==2 and expression_tree[0]!="~"): 
-        del expression_tree[0]
+def testCNF(sequences):
+    sequences = sequences.split("; ")
+    for sequence in sequences:
+        if(sequence == " "):
+            continue
+        sequence_x = infix_to_postfix(sequence)
+        expression = postfix_to_infix(sequence_x)
+        sym_converter = to_cnf(expression)
+        my_converter = prefix_to_infix(cnf_converter(construct_expression_tree(expression.replace("|", "||"))))
+        result = sym_converter.equals(parse_expr(my_converter.replace("||", "|").replace("=>", ">>")))
+        print_test(result)    
 
-    for sub_tree in expression_tree:
-        if(len(sub_tree)>1 and isinstance(sub_tree, list)):
-            remove_stand_alone_sub_trees(sub_tree)
-
-def check_if_tree_contain_multilayer(expression_tree):
-    if(len(expression_tree)==1 and len(expression_tree[0])>1):
-        sub_tree=expression_tree[0]
-        del expression_tree[:]
-        for tree in sub_tree:
-            expression_tree.append(tree)
-
-    for sub_tree in expression_tree:
-        if(len(sub_tree)>1):
-            check_if_tree_contain_multilayer(sub_tree)
-
-def to_cnf_form(sequences):
-    sequences = infix_to_postfix(sequences)
-    expression = postfix_to_infix(sequences)
-
-    postfix = str(to_cnf(expression))
-    postfix = postfix.replace("|", "||")			
-    return postfix
+def to_cnf_form(sequence):
+    sequence_x = infix_to_postfix(sequence)
+    expression = postfix_to_infix(sequence_x)
+    my_converter = prefix_to_infix(cnf_converter(construct_expression_tree(expression)))
+    if my_converter[0] == '(' and my_converter[-1] == ')':
+        my_converter = my_converter[1:-1]
+    return my_converter
