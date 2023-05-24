@@ -62,7 +62,13 @@ def execute_logic(operator: str, operand1: bool, operand2: bool):
         return operand1 == operand2
         
 def infix_to_prefix(sequences):
-    sequences = reversed(sequences)
+    while "~~" in sequences:
+        sequences = sequences.replace("~~", "")
+        
+    if(len(sequences) == 1):
+        return sequences
+    
+    sequences = get_content(sequences)[::-1]
     new_sequence = []
     for s in sequences:
         if(s == "("):
@@ -74,28 +80,6 @@ def infix_to_prefix(sequences):
     new_sequence = "".join(new_sequence)
     prefix = (infix_to_postfix(new_sequence))[::-1]
     return prefix
-
-
-
-def reversed(text):
-    ret = []
-    i = 0
-    while (i < len(text)):
-        if(text[i] == "<" and text[i + 1] == "=" and text[i + 2] == ">"):
-            ret.insert(0, "@")
-            i += 3
-        elif(text[i] == "=" and text[i + 1] == ">"):
-            ret.insert(0, "#")
-            i += 2
-        else:
-            ret.insert(0, text[i])
-            i += 1
-    for s in ret:
-        if(s == "@"):
-            ret[ret.index(s)] = "<=>"
-        elif(s == "#"):
-            ret[ret.index(s)] = "=>"
-    return "".join(ret)
               
 def construct_expression_tree(sequence):
     stack = []
@@ -117,7 +101,6 @@ def construct_expression_tree(sequence):
     return stack[0]
 
 def postfix_to_infix(sequences):
-    # print(sequences)
     stack = []
     for token in sequences:
         if token not in OPERANDS:
@@ -130,11 +113,11 @@ def postfix_to_infix(sequences):
                 right = stack.pop()
                 left = stack.pop()
                 if token == '=>':
-                    stack.append(f'(~{left} | {right})')
+                    stack.append(f'(~{left} || {right})')
                 elif token == '<=>':
-                    stack.append(f'(({left} & {right}) | (~{left} & ~{right}))')
+                    stack.append(f'(({left} & {right}) || (~{left} & ~{right}))')
                 elif token == "||":
-                    stack.append(f'({left} | {right})')
+                    stack.append(f'({left} || {right})')
                 else:
                     stack.append(f'({left} {token} {right})')
     return stack.pop()
@@ -150,3 +133,16 @@ def fail(test, method, output1, output2, index):
         f.write(str(output1 if "YES" else "NO"))
     with open(failed_test_out_put_other, "w") as f:
         f.write(str(output2 if "YES" else "NO"))
+
+# sequence has form like this ['||', 'c', ['~', '1p'], ['~', '3p']]        
+def prefix_to_infix(expression):
+    if isinstance(expression, str):
+        return expression
+
+    operator = expression[0]
+    if operator == '~':
+        operand = prefix_to_infix(expression[1])
+        return f"~{operand}"
+    elif operator == '||' or operator == '&':
+        operands = [prefix_to_infix(exp) for exp in expression[1:]]
+        return f"({f' {operator} '.join(operands)})"
