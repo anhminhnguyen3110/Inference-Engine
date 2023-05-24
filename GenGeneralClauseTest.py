@@ -23,6 +23,11 @@ def generate_random_expression(propositions, depth):
             num_operands = random.randint(2, len(propositions))
             operands = random.sample(propositions, num_operands)
             subexpressions = [generate_random_expression([p for p in propositions if p != op], depth - 1) for op in operands]
+            
+            # Check if any clause and its negation are present in subexpressions
+            while any(f"~{op}" in subexpressions for op in operands):
+                subexpressions = [generate_random_expression([p for p in propositions if p != op], depth - 1) for op in operands]
+                
             expression = f" {operator} ".join(subexpressions)
             return f"({expression})"
 
@@ -64,7 +69,11 @@ def run_general_test(number_of_test = 20):
         for method in GENERAL_METHODS:
             method = method.lower()
             agent.set_method(method)
-            output1 = agent.set_up_algorithm()[0]
+            result = agent.set_up_algorithm()
+            if result[1] == 0:
+                print(f"Test {colored(str(i+1), 'cyan')}: Invalid knowledge base")
+                break
+            output1 = result[0]
             if output1 == output2:
                 print(f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('PASSED', 'green')}")
             else:
@@ -72,7 +81,6 @@ def run_general_test(number_of_test = 20):
     
                 
 def fail(test, method, output1, output2, index):
-    print(f"Test {method} failed")
     print(f"Test {colored(str(index+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}")
     failed_test = f"{TEST_FOLDER_NAME}/failed_test_{index+1}.txt"
     failed_test_out_put_my = f"{TEST_FOLDER_NAME}/failed_test_output_{index+1}_method_{method}_my.txt"
