@@ -1,61 +1,55 @@
-import math
 import random
-import string
 import subprocess
 from termcolor import colored
+from constants import HORN_METHODS, NUM_SYMBOLS_HIGH, NUM_SYMBOLS_LOW, NUMBER_OF_HORN_CLAUSES, PROBABILITY_OF_HORN_QUERY_BEING_AN_EXPRESSION, PROGRAM_PATH_1, PROGRAM_PATH_2
 
-from constants import OPERANDS
 
-def generate_horn_clause(num_symbols, number_of_horn_clauses=10):    
-    symbols = [s for s in string.ascii_letters[:num_symbols]]
-    
-    horn_clauses = []
-    l = set()
-    for i in range(num_symbols*number_of_horn_clauses):
-        consequent = random.choice(symbols)
-        l.add(consequent)
-        antecedents = random.sample(symbols, random.randint(1, num_symbols - 1))
-        for item in antecedents:
-            l.add(item)
-            if item == consequent:
-                antecedents.remove(item)
-        if(len(antecedents) == 0):
-            i-=1
-            continue
-        clause = f"{'&'.join(antecedents)}=>{consequent}"
-        horn_clauses.append(clause)
-        
-    ask = random.choice(list(l))
-    length = math.ceil(len(l)/2)
-    for i in range(length):
-        x = random.choice(list(l))
-        while(x == ask or x in horn_clauses):
-            x = random.choice(list(l))
-        horn_clauses.append(x)
+def generate_propositions(num_propositions):
+    available_chars = [chr(i) for i in range(ord('a'), ord('z') + 1)]
+    propositions = random.sample(available_chars, num_propositions)
+    return propositions
+
+def generate_horn_clause(num_symbols, number_of_horn_clauses=10):
+    symbols = generate_propositions(num_symbols)
+    horn_clauses = set()
+    single_literals = set()
+
+    while len(horn_clauses) + len(single_literals) < number_of_horn_clauses:
+        if random.random() <= PROBABILITY_OF_HORN_QUERY_BEING_AN_EXPRESSION:
+            consequent = random.choice(symbols)
+            antecedents = random.sample(symbols, random.randint(1, num_symbols - 1))
+            antecedents = [a for a in antecedents if a != consequent]
+            if len(antecedents) == 0:
+                continue
+            clause = f"{'&'.join(antecedents)} => {consequent}"
+            horn_clauses.add(clause)
+        else:
+            consequent = random.choice(symbols)
+            clause = f"{consequent}"
+            single_literals.add(consequent)
+
+    single_literals = '; '.join(single_literals)
+
     tell = '; '.join(horn_clauses)
-    
+    tell = f"{tell}; {single_literals}"
+    ask = random.choice(list(symbols))
     program = f'TELL\n{tell}\nASK\n{ask}\n'
-    
+
     return program
 
-
-METHODS = ["FC", "BC", "TT"]
-program1_path_1 = "./dist/main.exe"
-program1_path_2 = "./dist/other.exe"
-
-def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_symbols_high=20, number_of_horn_clauses=10, horn_clause = True):
+def run_tests(num_tests, num_symbols_low=10, num_symbols_high=20, number_of_horn_clauses=10, horn_clause = True):
     for i in range(num_tests):
         if(horn_clause):
             program = generate_horn_clause(num_symbols=random.randint(num_symbols_low, num_symbols_high), number_of_horn_clauses=number_of_horn_clauses)
-        for method in METHODS:
+        for method in HORN_METHODS:
             input_test = "./dist/input.txt"
             with open(input_test, "w") as f:
                 f.write(program)
                 
-            result1 = subprocess.run([program1_path, method, input_test], capture_output=True)
+            result1 = subprocess.run([PROGRAM_PATH_1, method, input_test], capture_output=True)
             output1 = result1.stdout.decode().strip()
             
-            result2 = subprocess.run([program2_path, method, input_test], capture_output=True)
+            result2 = subprocess.run([PROGRAM_PATH_2, method, input_test], capture_output=True)
             output2 = result2.stdout.decode().strip()
                 
             if output1 == output2:
@@ -71,32 +65,5 @@ def run_tests(num_tests, program1_path, program2_path, num_symbols_low=10, num_s
                     f.write(output1)
                 with open(failed_test_out_put_other, "w") as f:
                     f.write(output2)
-        
-def generate_propositions(num_propositions):
-    propositions = []
-    for i in range(num_propositions):
-        proposition = chr(ord('a') + i)
-        propositions.append(proposition)
-    return propositions
-
-def generate_random_expression(propositions, depth):
-    if depth == 0 or len(propositions) == 1:
-        return random.choice(propositions)
-    else:
-        operator = random.choices(list(OPERANDS.keys()), weights=list(OPERANDS.values()))[0]
-        if operator == '~':
-            operand = generate_random_expression(propositions, depth - 1)
-            return f"~{operand}"
-        else:
-            num_operands = random.randint(2, len(propositions))
-            operands = random.sample(propositions, num_operands)
-            subexpressions = [generate_random_expression([p for p in propositions if p != op], depth - 1) for op in operands]
-            expression = f" {operator} ".join(subexpressions)
-            return f"({expression})"
-
-def generate_random_propositional_logic(num_propositions, depth):
-    propositions = generate_propositions(num_propositions)
-    expression = generate_random_expression(propositions, depth)
-    return expression
-
-# run_tests(1000, program1_path_1, program1_path_2, 2, 20, 3)
+                    
+run_tests(1000, NUM_SYMBOLS_LOW, NUM_SYMBOLS_HIGH, NUMBER_OF_HORN_CLAUSES)

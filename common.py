@@ -113,3 +113,25 @@ def construct_expression_tree(sequence):
         else:
             stack.append(token)
     return stack[0]
+
+def postfix_to_infix(sequences):
+    stack = []
+    for token in sequences:
+        if token not in OPERANDS:
+            stack.append(token)
+        else:
+            if token == '~':
+                right = stack.pop()
+                stack.append(f'(~{right})')
+            else:
+                right = stack.pop()
+                left = stack.pop()
+                if token == '=>':
+                    stack.append(f'(~{left} | {right})')
+                elif token == '<=>':
+                    stack.append(f'(({left} & {right}) | (~{left} & ~{right}))')
+                elif token == "||":
+                    stack.append(f'({left} | {right})')
+                else:
+                    stack.append(f'({left} {token} {right})')
+    return stack.pop()

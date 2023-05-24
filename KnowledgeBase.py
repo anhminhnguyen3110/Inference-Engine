@@ -70,7 +70,7 @@ class KnowledgeBase:
         elif(action == "ASK"):
             self.current_action = "ASK" 
             
-    def read_input(self, file_name):
+    def read_input_file(self, file_name):
         try:
             with open(file_name, "r", encoding="utf8") as file:
                 lines = file.read().splitlines()
