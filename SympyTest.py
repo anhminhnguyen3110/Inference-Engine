@@ -10,9 +10,12 @@ def sympyTest(input_file: str): # check if the result is entail or not
     SequenceSet = set()
     sequences = sequences.split(";")
     for sequence in sequences:
-        if(sequence == ""):
+        if(sequence == " "):
             continue
-        sequence = simplify(postfix_to_infix(infix_to_postfix(sequence)))
-        SequenceSet.add(sequence)    
+        else:
+            sequence = simplify(postfix_to_infix(infix_to_postfix(sequence)))
+            SequenceSet.add(sequence)    
     query = simplify(postfix_to_infix(infix_to_postfix(query)))
     return entails(query, SequenceSet)
+# string = "TELL\nb => r; d & r & n => b; r & d => n; b & r => d; n & d => r; n => b; r & n & d => b; b => d; \nASK\nr"
+# sympyTest(string)

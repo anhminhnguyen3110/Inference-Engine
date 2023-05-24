@@ -1,7 +1,9 @@
 
 import re
 
-from constants import OPERANDS
+from termcolor import colored
+
+from constants import OPERANDS, TEST_FOLDER_NAME
 def get_content(sentences: str):
     regex_logical = r'\w+\d+|\w+|=>|<=>|~|\)|\(|&|\|\|'
     tokens = sentences.replace(" ", "")
@@ -115,6 +117,7 @@ def construct_expression_tree(sequence):
     return stack[0]
 
 def postfix_to_infix(sequences):
+    # print(sequences)
     stack = []
     for token in sequences:
         if token not in OPERANDS:
@@ -135,3 +138,15 @@ def postfix_to_infix(sequences):
                 else:
                     stack.append(f'({left} {token} {right})')
     return stack.pop()
+                
+def fail(test, method, output1, output2, index):
+    print(f"Test {colored(str(index+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}")
+    failed_test = f"{TEST_FOLDER_NAME}/failed_test_{index+1}.txt"
+    failed_test_out_put_my = f"{TEST_FOLDER_NAME}/failed_test_output_{index+1}_method_{method}_my.txt"
+    failed_test_out_put_other = f"{TEST_FOLDER_NAME}/failed_test_output_{index+1}_method_{method}_other_program.txt"
+    with open(failed_test, "w") as f:
+        f.write(test)
+    with open(failed_test_out_put_my, "w") as f:
+        f.write(str(output1 if "YES" else "NO"))
+    with open(failed_test_out_put_other, "w") as f:
+        f.write(str(output2 if "YES" else "NO"))

@@ -3,6 +3,7 @@ import random
 from termcolor import colored
 from Engine import Engine
 from SympyTest import sympyTest
+from common import fail
 
 from constants import DEPTH, GENERAL_METHODS, NUMBER_OF_GENERAL_CLAUSES, NUMBER_OF_SYMBOLS_FIX, OPERANDS, PROBABILITY_OF_QUERY_BEING_AN_EXPRESSION, TEST_FILE_NAME, TEST_FOLDER_NAME
 
@@ -56,7 +57,7 @@ def generate_random_tests(num_propositions, num_expression, depth):
 
 def run_general_test(number_of_test = 20):
     os.makedirs(TEST_FOLDER_NAME, exist_ok=True)
-    for _ in range(number_of_test):
+    for i in range(number_of_test):
         test = generate_random_tests(NUMBER_OF_SYMBOLS_FIX, NUMBER_OF_GENERAL_CLAUSES, DEPTH)
         with open(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}", "w") as f:
             f.write(test)
@@ -65,7 +66,6 @@ def run_general_test(number_of_test = 20):
         output2 = sympyTest(test)
         
         agent.knowledge_base.read_input_file(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}")
-        i = 0
         for method in GENERAL_METHODS:
             method = method.lower()
             agent.set_method(method)
@@ -78,18 +78,5 @@ def run_general_test(number_of_test = 20):
                 print(f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('PASSED', 'green')}")
             else:
                 fail(test, method, output1, output2, i)
-    
-                
-def fail(test, method, output1, output2, index):
-    print(f"Test {colored(str(index+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}")
-    failed_test = f"{TEST_FOLDER_NAME}/failed_test_{index+1}.txt"
-    failed_test_out_put_my = f"{TEST_FOLDER_NAME}/failed_test_output_{index+1}_method_{method}_my.txt"
-    failed_test_out_put_other = f"{TEST_FOLDER_NAME}/failed_test_output_{index+1}_method_{method}_other_program.txt"
-    with open(failed_test, "w") as f:
-        f.write(test)
-    with open(failed_test_out_put_my, "w") as f:
-        f.write(str(output1 if "YES" else "NO"))
-    with open(failed_test_out_put_other, "w") as f:
-        f.write(str(output2 if "YES" else "NO"))
         
 run_general_test(100)
