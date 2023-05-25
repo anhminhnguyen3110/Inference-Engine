@@ -1,0 +1,2 @@
+TELL
+p & u => q; q & x & p => h; u & r => h; h => q; h & x & p & u & r => q

@@ -1,4 +1,4 @@
 TELL
-j & u & f => o; o => f; o & u => f; o => c; u => o; o & j & u & c => x; c & u & f & o => j; u;
+((s & v) || (v => w)); (~v || (w <=> v)); ((v <=> s) || (s || w) || (v & w)); (~s || (v & s))
 ASK
-x
+((w <=> s) || (v || s) || (v || w))

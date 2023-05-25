@@ -68,6 +68,7 @@ class DPLL(Algorithm):
         return False
 
     def dpll(self, list_clauses, model: list):
+        #print(list_clauses)
         if self.all_true(list_clauses, model):
             return model
         if self.some_false(list_clauses, model):
@@ -100,6 +101,7 @@ class DPLL(Algorithm):
             cnf_sentence = to_cnf_form(sentence.raw_content)
             list_sentence.append(cnf_sentence)
         for clause in list_sentence:
+            clause = clause.strip().replace("(", "").replace(")", "") 
             split_clause = clause.split("&")
             list_clauses.extend([component.strip() for component in split_clause])
         return (

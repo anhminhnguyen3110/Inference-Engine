@@ -1,0 +1,4 @@
+TELL
+r => g; g => r; m => r; g & r & m => w; r & g => m; m; w; r;
+ASK
+w

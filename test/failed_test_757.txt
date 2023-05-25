@@ -1,0 +1,4 @@
+TELL
+x => s; s => o; a & s => x; x & s => a; a & o => s; a => x; x; a;
+ASK
+s
