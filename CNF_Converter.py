@@ -248,40 +248,6 @@ def distribution_perform_training(
             result.append(distribution_perform(sub_expression_tree))
         return result
 
-
-def and_association_perform(
-    expression_tree,
-):
-    old_expression_tree = and_association_perform_training(expression_tree)
-    if old_expression_tree == expression_tree:  # if the training algorithm is converge
-        return expression_tree
-    else:  # retrain
-        return and_association_perform(old_expression_tree)
-
-
-# ["&", ["&", "a", "b"], ["&", "c", "d"]] -> ['&', 'a', 'b', 'c', 'd']
-
-
-def and_association_perform_training(
-    expression_tree,
-):
-    if type(expression_tree) is str:
-        return expression_tree
-    elif type(expression_tree) is list and expression_tree[0] == "&":
-        result = ["&"]
-        for sub_expression_tree in expression_tree[1:]:
-            if type(sub_expression_tree) is list and sub_expression_tree[0] == "&":
-                result += sub_expression_tree[1:]
-            else:
-                result.append(sub_expression_tree)
-        return result
-    else:
-        result = [expression_tree[0]]
-        for sub_expression_tree in expression_tree[1:]:
-            result.append(and_association_perform(sub_expression_tree))
-        return result
-
-
 def association_perform(
     expression_tree,
     expression,
@@ -300,8 +266,6 @@ def association_perform(
 
 
 # ["&", ["&", "a", "b"], ["&", "c", "d"]] -> ['&', 'a', 'b', 'c', 'd']
-
-
 def association_perform_training(
     expression_tree,
     expression,
