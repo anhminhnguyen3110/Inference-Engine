@@ -17,15 +17,17 @@ class ForwardChaining(Algorithm):
         query = self.query.content[0]
         while len(self.agenda) > 0:
             symbol = self.agenda.pop(0)
-            self.path.append(symbol)
+            if (symbol not in self.path):
+                self.path.append(symbol)
             if not self.inferred[symbol]:
                 self.inferred[symbol] = True
                 for sentence in self.count:
                     if symbol in sentence.premises:
                         self.count[sentence] -= 1
-                        if not self.count[sentence]:
+                        if self.count[sentence] == 0:
                             if sentence.conclusion == query:
-                                self.path.append(sentence.conclusion)
+                                if (sentence.conclusion not in self.path):
+                                    self.path.append(sentence.conclusion)
                                 return (True, self.path)
                             self.agenda.append(sentence.conclusion)
         return False, []
