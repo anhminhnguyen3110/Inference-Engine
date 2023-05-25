@@ -166,7 +166,7 @@ def gentest():
         elif test == "horn":
             run_horn_tests(1000)
         elif test == "general":
-            run_general_test(1000)
+            run_general_test(10000)
         elif test == "other_program":
             run_horn_tests_compared_between_two_programs(
                 1000, NUM_SYMBOLS_LOW, NUM_SYMBOLS_HIGH, NUMBER_OF_HORN_CLAUSES

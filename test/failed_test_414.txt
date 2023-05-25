@@ -1,4 +1,0 @@
-TELL
-u & y & f => h; u & h & f => y; u => f; u => b; f & h => b; u; y; f;
-ASK
-y

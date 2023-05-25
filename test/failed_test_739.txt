@@ -1,4 +1,0 @@
-TELL
-v & q & z & n => e; z & j => q; z => e; v => z; j & n & q & e => v; e => n; q & z & n & v & e => j; e;
-ASK
-n

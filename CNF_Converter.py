@@ -428,3 +428,15 @@ def to_cnf_form(
     if my_converter[0] == "(" and my_converter[-1] == ")":
         my_converter = my_converter[1:-1]
     return my_converter
+
+
+def to_cnf_form_prefix(
+    sequence,
+):
+    sequence_x = infix_to_postfix(sequence)
+    expression = postfix_to_infix(sequence_x).replace(
+        "|",
+        "||",
+    )
+    my_converter = cnf_converter(construct_expression_tree(expression))
+    return my_converter

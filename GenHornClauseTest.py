@@ -30,6 +30,6 @@ def generate_horn_clause(num_symbols, number_of_horn_clauses=10):
     single_literals = "; ".join(single_literals)
 
     tell = "; ".join(horn_clauses)
-    tell = f"{tell}; {single_literals}"
+    tell = f"{tell}; {single_literals};"
     ask = random.choice(list(symbols))
     return f"TELL\n{tell}\nASK\n{ask}\n"

@@ -8,24 +8,24 @@ import fileinput
 
 def standardize(cnf):
     if type(cnf) is str: # must be a single positive literal
-        return ["and", ["or", cnf]]
-    elif cnf[0] == "not": # must be a single negative literal
-        return ["and", ["or", cnf]]
-    elif cnf[0] == "or": # a single clause
-        return ["and", cnf]
+        return ['&', ['||', cnf]]
+    elif cnf[0] == '~': # must be a single negative literal
+        return ['&', ['||', cnf]]
+    elif cnf[0] == '||': # a single clause
+        return ['&', cnf]
     else:
-        result = ["and"]
+        result = ['&']
         for c in cnf[1:]:
             if type(c) == str:
-                result.append(["or", c])
-            elif c[0] == "not":
-                result.append(["or", c])
+                result.append(['||', c])
+            elif c[0] == '~':
+                result.append(['||', c])
             else:
                 result.append(c)
         return result
 
 def allTrue(cnf, model): # at least one member of model in each clause
-    for clause in cnf[1:]: # skip the "and"
+    for clause in cnf[1:]: # skip the '&'
         if len([var for var in clause[1:] if var in model]) == 0:
             return False
     return True
@@ -34,7 +34,7 @@ def compliments(model): # returns the compliment of each model literal
     result = []
     for literal in model:
         if type(literal) is str:
-            result.append(["not", literal])
+            result.append(['~', literal])
         else:
             result.append(literal[1])
     return result
@@ -100,7 +100,7 @@ def dpll1(cnf, model):
             return result
         else:
             # try negative
-            result = dpll1(cnf, model + [['not', pick]])
+            result = dpll1(cnf, model + [['~', pick]])
             if result:
                 return result
             else:
@@ -122,10 +122,10 @@ def formatOutput(result):
 
 ex1 = ['&', ['||', ['~', 'a'], 'a'], ['||', ['~', 'b'], 'a'], ['||', ['~', 'a'], 'b'], ['||', ['~', 'b'], 'b']]
 
-ex2 = ['and',
-       ['or', ['not', 'P'], 'Q'],
-       ['or', ['not', 'Q'], ['not', 'P']],
-       ['or', 'P', ['not', 'Q']]]
+ex2 = ['&',
+       ['||', ['~', 'P'], 'Q'],
+       ['||', ['~', 'Q'], ['~', 'P']],
+       ['||', 'P', ['~', 'Q']]]
         
 print(dpll(ex1))
 #print dpll(ex2)
