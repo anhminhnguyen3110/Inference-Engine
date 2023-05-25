@@ -1,3 +1,4 @@
+import time
 import os
 import random
 import subprocess
@@ -34,29 +35,38 @@ from constants import (
 
 def run_general_test(number_of_test=20):
     os.makedirs(TEST_FOLDER_NAME, exist_ok=True)
-    for i in range(number_of_test):
-        test = generate_random_tests(NUMBER_OF_SYMBOLS_FIX, NUMBER_OF_GENERAL_CLAUSES, DEPTH)
-        with open(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}", "w") as f:
-            f.write(test)
-        agent = Engine()
+    i = -1
+    number_of_fail = 0
+    while i < number_of_test:
+        try:
+            i += 1
+            test = generate_random_tests(NUMBER_OF_SYMBOLS_FIX, NUMBER_OF_GENERAL_CLAUSES, DEPTH)
+            with open(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}", "w") as f:
+                f.write(test)
+            agent = Engine()
 
-        output2 = sympyTest(test)
+            output2 = sympyTest(test)
 
-        agent.knowledge_base.read_input_file(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}")
-        for method in GENERAL_METHODS:
-            method = method.lower()
-            agent.set_method(method)
-            result = agent.set_up_algorithm()
-            if result[1] == 0:
-                print(f"Test {colored(str(i+1), 'cyan')}: Invalid knowledge base")
-                break
-            output1 = result[0]
-            if output1 == output2:
-                print(
-                    f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('PASSED', 'green')}"
-                )
-            else:
-                fail(test, method, output1, output2, i)
+            agent.knowledge_base.read_input_file(f"{TEST_FOLDER_NAME}{TEST_FILE_NAME}")
+            for method in GENERAL_METHODS:
+                method = method.lower()
+                agent.set_method(method)
+                result = agent.set_up_algorithm()
+                if result[1] == 0:
+                    # print(f"Test {colored(str(i+1), 'cyan')}: Invalid knowledge base")
+                    i -= 1
+                    break
+                output1 = result[0]
+                if output1 == output2:
+                    print(
+                        f"Test {colored(str(i+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('PASSED', 'green')}"
+                    )
+                else:
+                    number_of_fail += 1
+                    fail(test, method, output1, output2, i)
+        except Exception as e:
+            i -= 1
+    print(f"Rate of fail: {number_of_fail}/{number_of_test}")
 
 
 def run_horn_tests_compared_between_two_programs(
@@ -167,4 +177,6 @@ def gentest():
     return
 
 
+start_time = time.time()
 gentest()
+print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,4 +1,4 @@
 TELL
-j & u & f => o; o => f; o & u => f; o => c; u => o; o & j & u & c => x; c & u & f & o => j; u
+j & u & f => o; o => f; o & u => f; o => c; u => o; o & j & u & c => x; c & u & f & o => j; u;
 ASK
 x
