@@ -2,17 +2,18 @@ from CNF_Converter import to_cnf_form
 from KnowledgeBase import KnowledgeBase
 from Algorithm import Algorithm
 
+
 class Resolution(Algorithm):
     def __init__(self, knowledge_base: KnowledgeBase):
         super().__init__(knowledge_base)
         self.name = "Resolution"
 
-    def negate_literal(self, literal:str) -> str:
+    def negate_literal(self, literal: str) -> str:
         if literal.startswith("~"):
             return literal[1:]
         else:
             return "~" + literal
-        
+
     def is_inverse(self, literal1: str, literal2: str) -> bool:
         return self.negate_literal(literal1) == literal2
 
@@ -39,8 +40,8 @@ class Resolution(Algorithm):
             list_sentence.append(cnf_sentence)
 
         for clause in list_sentence:
-            split_clause = clause.split('&')
-            list_clauses.extend([c.split(' || ') for c in split_clause])
+            split_clause = clause.split("&")
+            list_clauses.extend([c.split(" || ") for c in split_clause])
 
         while True:
             new = list()
@@ -53,7 +54,7 @@ class Resolution(Algorithm):
 
             if len(new) == 0:
                 break
-            
+
             if all(c in list_clauses for c in new):
                 break
 
