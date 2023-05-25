@@ -1,4 +1,4 @@
 TELL
-p1 => p2; p2 => p3; p3 => p4; p4 => p5; p5 => p7; p9 => p14; p1;
+e & s => v; s & g => e; s & v => g; v & s => e; g & s & v => e; s & e & v => g; v & g => e; s => g; e; g;
 ASK
-p5
+s

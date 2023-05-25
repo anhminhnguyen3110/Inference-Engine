@@ -1,4 +1,3 @@
-import time
 import os
 import random
 import subprocess
@@ -72,6 +71,7 @@ def run_general_test(number_of_test=20):
 def run_horn_tests_compared_between_two_programs(
     num_tests, num_symbols_low=10, num_symbols_high=20, number_of_horn_clauses=10, horn_clause=True
 ):
+    os.makedirs(TEST_FOLDER_NAME, exist_ok=True)
     for i in range(num_tests):
         if horn_clause:
             test = generate_horn_clause(
@@ -177,6 +177,4 @@ def gentest():
     return
 
 
-start_time = time.time()
 gentest()
-print("--- %s seconds ---" % (time.time() - start_time))
