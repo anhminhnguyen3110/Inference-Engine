@@ -40,8 +40,9 @@ class Resolution(Algorithm):
             list_sentence.append(cnf_sentence)
 
         for clause in list_sentence:
+            clause = clause.replace(" ", "").replace("(", "").replace(")", "")
             split_clause = clause.split("&")
-            list_clauses.extend([c.split(" || ") for c in split_clause])
+            list_clauses.extend([c.split("||") for c in split_clause])
 
         while True:
             new = list()
