@@ -7,6 +7,7 @@ class DPLL(Algorithm):
         super().__init__(knowledge_base)
         self.name = "DPLL"
 
+    # Method to generate a list of the compliments for all symbols in the modeL
     def compliments(self, model: list) -> list:
         result = []
         for symbol in model:
@@ -16,13 +17,14 @@ class DPLL(Algorithm):
                 result.append(symbol[1])
         return result
     
-
+    # Method to check if all clauses are true in the model
     def all_true(self, clauses, model):
         for clause in clauses[1:]:
             if len([var for var in clause[1:] if var in model]) == 0:
                 return False
         return True
 
+    # Method to check if any clause is false in the model
     def some_false(self, clauses , model: list) -> bool:
         model_negated = self.compliments(model)
         for clause in clauses[1:]:
@@ -30,7 +32,8 @@ class DPLL(Algorithm):
                 return True
         return False
     
-    def pure_literal(self, clauses, model: list):
+    # Method to find a pure literal not yet assigned a value in the model
+    def pure_literal_assign(self, clauses, model: list):
         model_negated = self.compliments(model)
         candidates = []
         for clause in clauses[1:]:
@@ -42,41 +45,9 @@ class DPLL(Algorithm):
             if symbol not in model and symbol not in model_negated:
                 return symbol
         return False
-    
-    def pure_literal_assign(self, list_clauses, model: list):
-        model_negated = self.compliments(model)
-        candidates = []
-        for clause in list_clauses:
-            if clause[0] == "||":
-                if not any(var in model for var in clause[1:]):
-                    candidates += [var for var in clause[1:]]
-        candidates_negated = self.compliments(candidates)
-        pure = [var for var in candidates if var not in candidates_negated]
-        for var in pure:
-            if var not in model and var not in model_negated:
-                return var
-        return False
 
-    def unit_clause_assign(self, list_clauses, model: list):
-        model_negated = self.compliments(model)
-        for clause in list_clauses:
-            if clause[0] == "||":
-                remaining = [var for var in clause[1:] if var not in model_negated]
-                if len(remaining) == 1:
-                    if remaining[0] not in model:
-                        return remaining[0]
-        return False
-
-    def pick_literal(self, list_clauses, model: list):
-        combined = model + self.compliments(model)
-        for clause in list_clauses:
-            if clause[0] == "||":
-                for literal in clause[1:]:
-                    if literal not in combined:
-                        return literal
-        return False
-
-    def unit_clause(self, clauses, model: list):
+    # Method to find a unit clause not yet assigned a value in the model
+    def unit_clause_assign(self, clauses, model: list):
         model_negated = self.compliments(model)
         for clause in clauses[1:]:
             remaining = [symbol for symbol in clause[1:] if symbol not in model_negated]
@@ -85,7 +56,8 @@ class DPLL(Algorithm):
                     return remaining[0]
         return False
 
-    def pick_symbol(self, clauses, model: list):
+    # Method to pick a symbol not yet assigned a value in the model
+    def pick_literal(self, clauses, model: list):
         combined = model + self.compliments(model)
         for clause in clauses[1:]:
             for literal in clause[1:]:
@@ -94,17 +66,21 @@ class DPLL(Algorithm):
         return False
 
     def dpll(self, cnf, model):
+        # If all clauses are true, the current model is a satisfying assignment
         if self.all_true(cnf, model):
             return model
+        # If any clause is false, the current model is not a satisfying assignment
         if self.some_false(cnf, model):
             return False
-        pure = self.pure_literal(cnf, model)
+        # Find a pure literal
+        pure = self.pure_literal_assign(cnf, model)
         if pure:
             return self.dpll(cnf, model + [pure])
-        unit = self.unit_clause(cnf, model)
+        # Find a unit clause
+        unit = self.unit_clause_assign(cnf, model)
         if unit:
             return self.dpll(cnf, model + [unit])
-        pick = self.pick_symbol(cnf, model)
+        pick = self.pick_literal(cnf, model)
         if pick:
             # try positive
             result = self.dpll(cnf, model + [pick])
@@ -119,9 +95,9 @@ class DPLL(Algorithm):
                     return False
                 
     def stable(self, clause):
-        if type(clause) is str: # must be a single positive literal
+        if type(clause) is str: # a single positive literal
             return ["&", ["||", clause]]
-        elif clause[0] == "~": # must be a single negative literal
+        elif clause[0] == "~": # a single negative literal
             return ["&", ["||", clause]]
         elif clause[0] == "||": # a single clause
             return ["&", clause]
@@ -140,10 +116,8 @@ class DPLL(Algorithm):
         query = self.knowledge_base.query[0]
         q_content = query.raw_content
         q_content = "~(" + q_content + ")"
-
-
+        # Prepare the query in CNF form
         cnf_q = to_cnf_form_prefix(q_content)
-
         list_sentence = []
         for sentence in self.knowledge_base.sentences:
             cnf_sentence = to_cnf_form_prefix(sentence.raw_content)
@@ -153,6 +127,7 @@ class DPLL(Algorithm):
                     list_sentence.append(sub_clause)
             else:
                 list_sentence.append(cnf_sentence)
+        # Add the query to the list of sentences
         if (cnf_q[0] == "&"):
             cnf_q = cnf_q[1:]
             for sub_clause in cnf_q:
