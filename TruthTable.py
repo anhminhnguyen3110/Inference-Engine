@@ -15,7 +15,6 @@ class TruthTable(Algorithm):
         if symbols.__len__() == 0:
             result = True
             if self.knowledge_base.check(model):
-                # print(model)
                 result = self.query.check(model)
                 if result:
                     self.count += 1
@@ -23,6 +22,7 @@ class TruthTable(Algorithm):
         else:
             p = symbols[0]
             rest = symbols[1:]
+            # check all combinations of p
             return self.check_all(rest, model + [(p, True)]) and self.check_all(
                 rest, model + [(p, False)]
             )

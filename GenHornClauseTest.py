@@ -1,6 +1,7 @@
 import random
 from constants import PROBABILITY_OF_HORN_QUERY_BEING_AN_EXPRESSION
 
+# Generate random propositions
 def generate_propositions(num_propositions):
     available_chars = [chr(i) for i in range(ord("a"), ord("z") + 1)]
     propositions = random.sample(available_chars, num_propositions)
@@ -11,6 +12,7 @@ def generate_horn_clause(num_symbols, number_of_horn_clauses=10):
     horn_clauses = set()
     single_literals = set()
 
+    # Generate random horn clauses
     while len(horn_clauses) + len(single_literals) < number_of_horn_clauses:
         if random.random() <= PROBABILITY_OF_HORN_QUERY_BEING_AN_EXPRESSION:
             consequent = random.choice(symbols)

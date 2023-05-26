@@ -51,7 +51,7 @@ def run_general_test(number_of_test=20):
                 method = method.lower()
                 agent.set_method(method)
                 result = agent.set_up_algorithm()
-                if result[1] == 0:
+                if result[1] == 0 and result[0] == "YES":
                     # print(f"Test {colored(str(i+1), 'cyan')}: Invalid knowledge base")
                     i -= 1
                     break
@@ -131,7 +131,6 @@ def print_test(exp):
     else:
         print("Test " + colored("FAILS", "red"))
         pass
-
 
 def testCNF(sequences):
     sequences = sequences.split("; ")

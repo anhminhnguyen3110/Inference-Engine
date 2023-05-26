@@ -14,5 +14,4 @@ def main():
         agent.knowledge_base.read_input_file(file_name)
         agent.do_algorithm()
 
-
 main()

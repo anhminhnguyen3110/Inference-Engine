@@ -1,13 +1,13 @@
 import random
 from constants import OPERANDS, PROBABILITY_OF_QUERY_BEING_AN_EXPRESSION
 
-
+# Generate random propositions
 def generate_propositions(num_propositions):
     available_chars = [chr(i) for i in range(ord("a"), ord("z") + 1)]
     propositions = random.sample(available_chars, num_propositions)
     return propositions
 
-
+# Generate random expression
 def generate_random_expression(propositions, depth):
     if depth == 0 or len(propositions) == 1:
         return random.choice(propositions)
@@ -36,6 +36,7 @@ def generate_random_expression(propositions, depth):
 
 
 def generate_random_query(propositions, depth=3):
+    # Check if query is an expression or a single proposition by probability
     if random.random() < PROBABILITY_OF_QUERY_BEING_AN_EXPRESSION:
         return generate_random_expression(propositions, depth)
     else:

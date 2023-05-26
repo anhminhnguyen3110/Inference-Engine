@@ -14,14 +14,12 @@ class DPLL(Algorithm):
                 result.append(["~", symbol])
             else:
                 result.append(symbol[1])
-        # print("Compliments: ", result)
         return result
     
 
     def all_true(self, clauses, model):
         for clause in clauses[1:]:
             if len([var for var in clause[1:] if var in model]) == 0:
-                # print("Reach here")
                 return False
         return True
 
@@ -29,7 +27,6 @@ class DPLL(Algorithm):
         model_negated = self.compliments(model)
         for clause in clauses[1:]:
             if len([var for var in clause[1:] if var not in model_negated]) == 0:
-                # print("Reach here")
                 return True
         return False
     
@@ -43,8 +40,40 @@ class DPLL(Algorithm):
         pure = [symbol for symbol in candidates if symbol not in candidates_negated]
         for symbol in pure:
             if symbol not in model and symbol not in model_negated:
-                # print("Pure Literal: ", symbol)
                 return symbol
+        return False
+    
+    def pure_literal_assign(self, list_clauses, model: list):
+        model_negated = self.compliments(model)
+        candidates = []
+        for clause in list_clauses:
+            if clause[0] == "||":
+                if not any(var in model for var in clause[1:]):
+                    candidates += [var for var in clause[1:]]
+        candidates_negated = self.compliments(candidates)
+        pure = [var for var in candidates if var not in candidates_negated]
+        for var in pure:
+            if var not in model and var not in model_negated:
+                return var
+        return False
+
+    def unit_clause_assign(self, list_clauses, model: list):
+        model_negated = self.compliments(model)
+        for clause in list_clauses:
+            if clause[0] == "||":
+                remaining = [var for var in clause[1:] if var not in model_negated]
+                if len(remaining) == 1:
+                    if remaining[0] not in model:
+                        return remaining[0]
+        return False
+
+    def pick_literal(self, list_clauses, model: list):
+        combined = model + self.compliments(model)
+        for clause in list_clauses:
+            if clause[0] == "||":
+                for literal in clause[1:]:
+                    if literal not in combined:
+                        return literal
         return False
 
     def unit_clause(self, clauses, model: list):
@@ -61,7 +90,6 @@ class DPLL(Algorithm):
         for clause in clauses[1:]:
             for literal in clause[1:]:
                 if type(literal) is str and literal not in combined:
-                    # print("Picked: ", literal)
                     return literal
         return False
 
@@ -106,7 +134,6 @@ class DPLL(Algorithm):
                     result.append(["||", sub_clause])
                 else:
                     result.append(sub_clause)
-            print("stable", result)
             return result
 
     def entails(self) -> tuple[bool, list]:
@@ -132,9 +159,7 @@ class DPLL(Algorithm):
                 list_sentence.append(sub_clause)
         else:
             list_sentence.append(cnf_q)
-        print("sentence", list_sentence)
         list_sentence = ["&"] + list_sentence
         ans = self.dpll(self.stable(list_sentence), [])
-        print ("ans",ans)
         return not bool(ans), []
         

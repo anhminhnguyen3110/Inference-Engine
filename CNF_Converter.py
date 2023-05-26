@@ -5,12 +5,15 @@ from common import (
     prefix_to_infix,
 )
 
-
 def biconditional_eliminating(
     expression_tree,
 ):
+    # If the expression tree is a string, return it
     if type(expression_tree) is str:
         return expression_tree
+    
+    # ["<=>", "A", "B"] => ["&", ["=>", "A", "B"], ["=>", "B", "A"]]
+    # A <=> B => (A => B) and (B => A)
     elif type(expression_tree) is list and expression_tree[0] == "<=>":
         return [
             "&",
@@ -27,16 +30,19 @@ def biconditional_eliminating(
         ]
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(biconditional_eliminating(sub_expression_tree))
         return result
 
-
 def implies_eliminating(
     expression_tree,
 ):
+    # If the expression tree is a string, return it
     if type(expression_tree) is str:
         return expression_tree
+    # ["=>", "A", "B"] => ["||", ["~", "A"], "B"]
+    # A => B => (not A) or B
     elif type(expression_tree) is list and expression_tree[0] == "=>":
         return [
             "||",
@@ -48,13 +54,10 @@ def implies_eliminating(
         ]
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(implies_eliminating(sub_expression_tree))
         return result
-
-
-# retrain
-
 
 def negation_eliminating(
     expression_tree,
@@ -65,13 +68,16 @@ def negation_eliminating(
     else:  # retrain
         return negation_eliminating(old_expression_tree)  # retrain
 
-
+# Demorgan
 def negation_eliminating_training(
     expression_tree,
 ):
+    # If the expression tree is a string, return it
     if type(expression_tree) is str:
         return expression_tree
 
+    # ["~", ["&", "A", "B"]] => ["||", ["~", "A"], ["~", "B"]]
+    # not (A and B) => (not A) or (not B)
     elif (
         type(expression_tree) is list
         and expression_tree[0] == "~"
@@ -89,6 +95,9 @@ def negation_eliminating_training(
                 )
             )
         return result
+    
+    # ["~", ["||", "A", "B"]] => ["&", ["~", "A"], ["~", "B"]]
+    # (not (A or B)) => ((not A) and (not B))
     elif (
         type(expression_tree) is list
         and expression_tree[0] == "~"
@@ -108,16 +117,20 @@ def negation_eliminating_training(
         return result
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(negation_eliminating(sub_expression_tree))
         return result
 
-
 def doubleNegEleminating(
     expression,
 ):
+    # If the expression tree is a string, return it
     if type(expression) is str:
         return expression
+    
+    # ["~", ["~", "A"]] => "A"
+    # (not (not A)) => A
     elif (
         type(expression) is list
         and expression[0] == "~"
@@ -127,19 +140,20 @@ def doubleNegEleminating(
         return doubleNegEleminating(expression[1][1])
     else:
         result = [expression[0]]
+        # Examine each sub-expression tree
         for sub_expression in expression[1:]:
             result.append(doubleNegEleminating(sub_expression))
         return result
 
-
-# this function ensure that every sub_expression_tree is in binary form (e.g. ["&", "p", "q", "r", "s"] => ["&", "p", ["&", "q", ["&", "r", "s"]]])
+# this function ensure that every sub_expression_tree is in binary form
 def groupToBinaryForm(
     expression_tree,
 ):
     if type(expression_tree) is str:
         return expression_tree
 
-    # if the expression_tree is in the form of ["&", "p", "q", "r", "s"]
+    # ["&", "p", "q", "r", "s"] => ["&", "p", ["&", "q", ["&", "r", "s"]]]
+    # p and q and r and s => p and (q and (r and s))
     elif type(expression_tree) is list and expression_tree[0] == "&" and len(expression_tree) > 3:
         result = [
             "&",
@@ -156,7 +170,8 @@ def groupToBinaryForm(
             )
         return result
 
-    # if the expression_tree is in the form of ["||", "p", "q", "r", "s"]
+    # ["||", "p", "q", "r", "s"] => ["||", "p", ["||", "q", ["||", "r", "s"]]
+    # p or q or r or s => p or (q or (r or s))
     elif type(expression_tree) is list and expression_tree[0] == "||" and len(expression_tree) > 3:
         result = [
             "||",
@@ -176,18 +191,17 @@ def groupToBinaryForm(
     # check another sub_expression_tree
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(groupToBinaryForm(sub_expression_tree))
         return result
 
 
-# only works on binary connectives
-
-
+# only works on binary connectives that is ["&", "p", "q"] or (p and q)
 def distribution_perform(
     expression_tree,
-):  # Distributive law to convert A or (B and C) to (A or B) and (A or C) => CNF
-    # this function is still using training algorithm to execute
+):  # Distributive law to convert A or (B and C) to (A or B) and (A or C)
+    
     old_expression_tree = distribution_perform_training(expression_tree)
     if old_expression_tree == expression_tree:  # if the training algorithm is converge
         return expression_tree
@@ -202,7 +216,8 @@ def distribution_perform_training(
     if type(expression_tree) is str:
         return expression_tree
 
-    # Convert A or (B and C) to (A or B) and (A or C)
+    # ["||", "A", ["&", "B", "C"]] => ["&", ["||", "A", "B"], ["||", "A", "C"]
+    # A or (B and C) to (A or B) and (A or C)
     elif (
         type(expression_tree) is list
         and expression_tree[0] == "||"
@@ -222,7 +237,8 @@ def distribution_perform_training(
             )
         return result
 
-    # Convert (B and C) or A to (A or B) and (A or C)
+    # ["||", ["&", "B", "C"], "A"] => ["&", ["||", "B", "A"], ["||", "C", "A"]
+    # (B and C) or A to (B or A) and (C or A)
     elif (
         type(expression_tree) is list
         and expression_tree[0] == "||"
@@ -244,6 +260,7 @@ def distribution_perform_training(
 
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(distribution_perform(sub_expression_tree))
         return result
@@ -264,14 +281,16 @@ def association_perform(
             expression,
         )
 
-
-# ["&", ["&", "a", "b"], ["&", "c", "d"]] -> ['&', 'a', 'b', 'c', 'd']
 def association_perform_training(
     expression_tree,
     expression,
 ):
+    # If the expression tree is a string, then it is a variable
     if type(expression_tree) is str:
         return expression_tree
+    
+    # ["&", "p", ["&", "q", "r"]] => ["&", "p", "q", "r"]
+    # p and (q and r) => p and q and r
     elif type(expression_tree) is list and expression_tree[0] == expression:
         result = [expression]
         for sub_expression_tree in expression_tree[1:]:
@@ -280,8 +299,10 @@ def association_perform_training(
             else:
                 result.append(sub_expression_tree)
         return result
+    
     else:
         result = [expression_tree[0]]
+        # Examine each sub-expression tree
         for sub_expression_tree in expression_tree[1:]:
             result.append(
                 association_perform(
@@ -294,17 +315,24 @@ def association_perform_training(
 
 def duplication_symbols_eliminating(
     expression_tree,
-):  # ["&", "b", "c", "b", "c"] => ["&", "b", "c"]
+):
+    
+    # If the expression tree is a string, then it is a variable
     if type(expression_tree) is str:
         return expression_tree
     elif type(expression_tree) is list:
+        # not is not influenced by duplication        
         if expression_tree[0] == "~":
             return expression_tree
+        # ["&", "b", "c", "b", "c"] => ["&", "b", "c"]
+        # b and c and b and c => b and c
         elif expression_tree[0] == "&":
             result = ["&"]
             for sub_expression_tree in expression_tree[1:]:
                 result.append(duplication_symbols_eliminating(sub_expression_tree))
             return result
+        # ["||", "b", "c", "b", "c"] => ["||", "b", "c"]
+        # b or c or b or c => b or c
         elif expression_tree[0] == "||":
             exist = []
             for sub_expression_tree in expression_tree[1:]:
@@ -316,17 +344,21 @@ def duplication_symbols_eliminating(
                 return ["||"] + exist
 
 
-# ["&", ["&", "b", "c"], ["&", "b", "c"]] => ["&", "b", "c"]
 def duplication_sub_expression_eliminating(
     expression_tree,
 ):
+    # If the expression tree is a string, then it is a variable
     if type(expression_tree) is str:
         return expression_tree
     elif type(expression_tree) is list:
+        # Not is not influenced by sub-expression duplication
         if expression_tree[0] == "~":
             return expression_tree
+        # Or is not influenced by sub-expression duplication
         elif expression_tree[0] == "||":
             return expression_tree
+        
+        # ["&", ["||", "b", "c"], ["||", "b", "c"]] => ["||", "b", "c"]
         elif expression_tree[0] == "&":
             exist = []
             for sub_expression_tree in expression_tree[1:]:
@@ -340,7 +372,7 @@ def duplication_sub_expression_eliminating(
             else:
                 return ["&"] + exist
 
-
+# Recursive find every root of nested array/expression tree and compare with the exist array
 def check_duplication_of_nested_array(
     expression_tree,
     exist,
@@ -349,6 +381,7 @@ def check_duplication_of_nested_array(
         if type(expression_tree) is str or type(element) is str:
             if expression_tree == element:
                 return False
+        # Compare the root of nested array
         elif len(expression_tree) == len(element):
             if len([i for i in expression_tree[1:] if i not in element[1:]]) == 0:
                 return False
@@ -367,10 +400,14 @@ def cnf_converter(
     expression_tree = doubleNegEleminating(expression_tree)
     expression_tree = groupToBinaryForm(expression_tree)
     expression_tree = distribution_perform(expression_tree)
+    
+    # the and association perform
     expression_tree = association_perform(
         expression_tree,
         "&",
     )
+    
+    # the or association perform
     expression_tree = association_perform(
         expression_tree,
         "||",
