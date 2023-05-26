@@ -106,6 +106,7 @@ class DPLL(Algorithm):
                     result.append(["||", sub_clause])
                 else:
                     result.append(sub_clause)
+            print("stable", result)
             return result
 
     def entails(self) -> tuple[bool, list]:
@@ -119,12 +120,21 @@ class DPLL(Algorithm):
         list_sentence = []
         for sentence in self.knowledge_base.sentences:
             cnf_sentence = to_cnf_form_prefix(sentence.raw_content)
-            print(sentence.raw_content, cnf_sentence)
-            list_sentence.append(cnf_sentence)
-        list_sentence.append(cnf_q)
-        print(list_sentence)
+            if (cnf_sentence[0] == "&"):
+                cnf_sentence = cnf_sentence[1:]
+                for sub_clause in cnf_sentence:
+                    list_sentence.append(sub_clause)
+            else:
+                list_sentence.append(cnf_sentence)
+        if (cnf_q[0] == "&"):
+            cnf_q = cnf_q[1:]
+            for sub_clause in cnf_q:
+                list_sentence.append(sub_clause)
+        else:
+            list_sentence.append(cnf_q)
+        print("sentence", list_sentence)
+        list_sentence = ["&"] + list_sentence
         ans = self.dpll(self.stable(list_sentence), [])
-        print (ans)
-        if(ans is False):
-            ans = True
-        return (ans, [])
+        print ("ans",ans)
+        return not bool(ans), []
+        
