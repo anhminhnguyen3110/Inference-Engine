@@ -6,7 +6,6 @@ from ForwardChaining import ForwardChaining
 from DPLL import DPLL
 from Resolution import Resolution
 
-
 class Engine:
     def __init__(self) -> None:
         self.method = "tt"
@@ -33,6 +32,7 @@ class Engine:
             ans = self.algorithm.entails()
         return ans
 
+    # print the result of the algorithm
     def do_algorithm(self):
         ans = self.set_up_algorithm()
         if ans[0] == True:

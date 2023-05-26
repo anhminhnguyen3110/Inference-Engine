@@ -14,7 +14,10 @@ def sympyTest(input_file: str):  # check if the result is entail or not
         if sequence == " ":
             continue
         else:
-            sequence = simplify(postfix_to_infix(infix_to_postfix(sequence)))
+            postfix = infix_to_postfix(sequence)
+            if (len(postfix) == 0):
+                continue
+            sequence = simplify(postfix_to_infix(postfix))
             SequenceSet.add(sequence)
     query = simplify(postfix_to_infix(infix_to_postfix(query)))
     return entails(query, SequenceSet)

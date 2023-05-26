@@ -2,12 +2,18 @@ from Sentence import Sentence
 from common import get_content
 from constants import OPERANDS
 
-
+# HornSentence class
 class HornSentence(Sentence):
     def __init__(self, raw_content: str = "", content: list = [], symbols: dict = dict()):
         super().__init__(raw_content, content, symbols)
+        # form: [p1, p2, ..., pn, =>, q]
+        
+        # q
         self.conclusion = ""
+        
+        # [p1, p2, ..., pn]
         self.premises = []
+        
         self.set_variables()
 
     def set_variables(self):

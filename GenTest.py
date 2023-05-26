@@ -132,7 +132,6 @@ def print_test(exp):
         print("Test " + colored("FAILS", "red"))
         pass
 
-
 def testCNF(sequences):
     sequences = sequences.split("; ")
     for sequence in sequences:
