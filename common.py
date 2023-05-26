@@ -3,14 +3,14 @@ from termcolor import colored
 
 from constants import OPERANDS, TEST_FOLDER_NAME
 
-
+# Take the symbols and operand from the clause
 def get_content(sentences: str):
     regex_logical = r"\w+\d+|\w+|=>|<=>|~|\)|\(|&|\|\|"
     tokens = sentences.replace(" ", "")
     tokens = re.findall(regex_logical, tokens)
     return tokens
 
-
+# Convert infix to postfix for Truth Table
 def infix_to_postfix(sentences: str):
     stack = []
     queue = []
@@ -35,22 +35,7 @@ def infix_to_postfix(sentences: str):
         queue.append(stack.pop())
     return queue
 
-
-def postfix_to_infix(sequences):
-    stack = []
-    for token in sequences:
-        if token not in OPERANDS:
-            stack.append(token)
-        elif stack.__len__() >= 2 and token != "~":
-            right = stack.pop()
-            left = stack.pop()
-            stack.append(f"({left} {token} {right})")
-        elif stack.__len__() >= 1 and token == "~":
-            right = stack.pop()
-            stack.append(f"~{right}")
-    return stack.pop()
-
-
+# Generic logic for Truth Table
 def execute_logic(operator: str, operand1: bool, operand2: bool):
     if operator == "~":
         return not operand1
@@ -63,7 +48,7 @@ def execute_logic(operator: str, operand1: bool, operand2: bool):
     elif operator == "<=>":
         return operand1 == operand2
 
-
+# Convert infix to prefix for CNF
 def infix_to_prefix(sequences):
     while "~~" in sequences:
         sequences = sequences.replace("~~", "")
@@ -84,7 +69,7 @@ def infix_to_prefix(sequences):
     prefix = (infix_to_postfix(new_sequence))[::-1]
     return prefix
 
-
+# Construct expression tree/prefix order for CNF
 def construct_expression_tree(sequence):
     stack = []
     expression = infix_to_prefix(sequence)[::-1]
@@ -104,17 +89,17 @@ def construct_expression_tree(sequence):
             stack.append(token)
     return stack[0]
 
-
+# Convert postfix to infix for Truth Table and CNF
 def postfix_to_infix(sequences):
     stack = []
     for token in sequences:
         if token not in OPERANDS:
             stack.append(token)
         else:
-            if token == "~":
+            if stack.__len__() >= 1 and token == "~":
                 right = stack.pop()
                 stack.append(f"(~{right})")
-            else:
+            elif stack.__len__() >= 2 and token != "~":
                 right = stack.pop()
                 left = stack.pop()
                 if token == "=>":
@@ -127,7 +112,7 @@ def postfix_to_infix(sequences):
                     stack.append(f"({left} {token} {right})")
     return stack.pop()
 
-
+# Fail function to write the failed test cases
 def fail(test, method, output1, output2, index):
     print(
         f"Test {colored(str(index+1), 'cyan')} with method {colored(method, 'yellow')}: {colored('FAILED', 'red')}"
@@ -146,12 +131,12 @@ def fail(test, method, output1, output2, index):
     with open(failed_test_out_put_other, "w") as f:
         f.write(str(output2 if "YES" else "NO"))
 
-
+# Convert prefix to infix for CNF
 def prefix_to_infix(expression):
     if isinstance(expression, str):
         return expression
-
     operator = expression[0]
+    
     if operator == "~":
         operand = prefix_to_infix(expression[1])
         return f"~{operand}"

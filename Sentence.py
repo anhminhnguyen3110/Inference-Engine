@@ -8,6 +8,7 @@ class Sentence:
         self.content = content
         self.symbols = symbols
 
+    # check if the model satisfies the sentence
     def check(self, model: list[tuple[str, bool]]) -> bool:
         stack = []
         for token, value in model:

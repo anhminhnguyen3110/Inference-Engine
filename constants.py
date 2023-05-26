@@ -2,7 +2,7 @@ OPERANDS = {"~": 4, "&": 3, "||": 3, "=>": 1, "<=>": 1}
 PROBABILITY_OF_HORN_QUERY_BEING_AN_EXPRESSION = 0.7
 PROBABILITY_OF_QUERY_BEING_AN_EXPRESSION = 0.6
 HORN_METHODS = ["FC", "BC", "TT"]
-GENERAL_METHODS = ["TT", "DPLL"]
+GENERAL_METHODS = ["TT", "Resolution", "DPLL"]
 PROGRAM_PATH_1 = "./dist/iengine.exe"
 PROGRAM_PATH_2 = "./dist/other.exe"
 NUM_SYMBOLS_LOW = 4
