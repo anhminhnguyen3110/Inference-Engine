@@ -26,6 +26,22 @@ Forward Chaining is a "data-driven" algorithm that starts with the knowledge bas
 
 Backward Chaining starts from the query and utilizes a depth-first search to find known facts in the knowledge base. It recursively checks every premise of the query. If there are sufficient facts to prove the goal, it returns "YES"; otherwise, it returns "NO." Backward Chaining performs better in terms of runtime compared to Forward Chaining and the Truth Table algorithm as it focuses on the specific goal and avoids examining the entire knowledge base.
 
+### CNF Conversion
+
+The CNF Conversion algorithm transforms a logical expression in general form into Conjunctive Normal Form (CNF). CNF is a requirement for successful execution of the Resolution and DPLL algorithms. This algorithm performs operations such as biconditional and implication elimination, De Morgan's laws, distribution, association, and duplication elimination. It iteratively simplifies the expression until convergence is achieved.
+
+### Resolution Algorithm
+
+The Resolution algorithm is a complete inference algorithm used for logical assertions and queries in propositional logic. It aims to prove that a knowledge base (KB) entails a query (α) by checking the unsatisfiability of the conjunction of KB and the negation of α in CNF form. The algorithm applies the resolution rule, which resolves pairs of clauses containing complementary literals. If an empty clause is derived, it concludes that KB entails α. If no new clauses can be generated, it determines that KB does not entail α.
+
+### DPLL Algorithm
+
+The DPLL (Davis-Putnam-Logemann-Loveland) algorithm is a backtracking algorithm for solving the satisfiability problem of a knowledge base in CNF form. It explores different assignments of literals using recursion. The algorithm employs unit propagation and pure literal elimination to reduce the problem size. Unit propagation assigns truth values to unit clauses, which are clauses with only one unassigned literal. Pure literal elimination identifies literals that appear with the same polarity in all clauses and assigns them a truth value. By pruning the search space, the algorithm can efficiently determine the satisfiability of the CNF formula.
+
+Please refer to the code and comments in the respective files for a detailed implementation of these algorithms.
+
+**Note**: The Resolution and DPLL algorithms are complete, but the DPLL algorithm is not guaranteed to be optimal. Its worst-case time complexity is still exponential.
+
 ## Acknowledgments/Resources
 
 The implementation of the Inference Engine was guided by the book "Artificial Intelligence: A Modern Approach" by Russell and Norvig. The book provided a comprehensive understanding and practical insights into inference engine operations.
