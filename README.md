@@ -49,3 +49,7 @@ The implementation of the Inference Engine was guided by the book "Artificial In
 ## Notes
 
 To use the program, the syntax is `iengine [method] [filename]`. The available methods are TT, FC, BC, Resolution, and DPLL (not case-sensitive). The filename should be a text file formatted as demonstrated in the assignment. To run a test for Horn clauses, the.
+
+## Contributors
+Duy Khoa Pham - 103515617
+Anh Minh Nguyen - 103178955
